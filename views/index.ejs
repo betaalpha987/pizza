@@ -1,0 +1,68 @@
+<!--<percent equals: add js value as html text.><percent: run JS code but show nothing in HTML page--> 
+<!--Rename to ejs later-->
+<!DOCTYPE HTML>
+<html lang = "en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pizza Poller</title>
+</head>
+<body>
+<h1>Pizza Poller</h1>
+<ul class = "pizza">
+  <% for (let i = 0; i < pizza.length; i++) {%>
+    <li class="pizza">
+      <span><%=pizza[i].othertopping %></span><br>
+    </li>
+  <%}%>
+</ul>
+
+<form action="/pizza" method = "POST">
+  <input type = "checkbox" name = "tomatoes"> Tomatoes<br>
+  <input type = "checkbox" name = "mushrooms"> Mushrooms<br>
+  <input type = "checkbox" name = "greenolives"> Green Olives<br>
+  <input type = "checkbox" name = "bacon"> Bacon<br>
+  <input type = "checkbox" name = "greenpeppers"> Green Peppers<br>
+  <input type = "checkbox" name = "pepperoni"> Pepperoni<br>
+  <input type = "checkbox" name = "pineapple"> Pineapple<br>
+  <input type = "checkbox" name = "redchillis"> Red chillis<br>
+
+  <input type = "text" placeholder = "Please enter topping" name = "othertopping">
+
+  <button type = "submit">Submit</button>
+</form>
+
+<%
+  function countTopp(item) {
+    let num = 0;
+    for (let i = 0; i < pizza.length; i++) {
+      if (pizza[i][item]) num +=1;
+    }
+    return num;
+  }
+%>
+<p>
+Total tomatoes: <%=countTopp("tomatoes")%><br>
+Total mushrooms: <%=countTopp("mushrooms")%><br>
+Total green olives: <%=countTopp("greenolives")%><br>
+Total bacon: <%=countTopp("bacon")%><br>
+Total green peppers: <%=countTopp("greenpeppers")%><br>
+Total pepperoni: <%=countTopp("pepperoni")%><br>
+Total pineapple: <%=countTopp("pineapple")%><br>
+Total red chillis: <%=countTopp("redchillis")%><br>
+
+
+
+
+
+
+
+
+</p>
+<script>
+
+
+</script>
+
+</body>
+
+</html>
