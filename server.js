@@ -9,7 +9,7 @@ app.set('view engine', 'ejs') // EJS is a simple template engine for rendering t
 
 let db;
 
-MongoClient.connect('mongodb://pizzauser:pizzauser@ds157819.mlab.com:57819/pizza', (err,database) => {
+MongoClient.connect(process.env.DATABASE_URL, (err,database) => {
   if (err) return console.log(err);
   db = database;
   app.listen(process.env.PORT || 5000, function() {
