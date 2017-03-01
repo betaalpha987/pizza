@@ -6,6 +6,7 @@
   <meta charset="UTF-8">
   <title>Pizza Poller Deluxe</title>
 </head>
+
 <body>
 <h1>Pizza Poller Deluxeeeee</h1>
 <ul class = "pizza">
@@ -17,14 +18,27 @@
 </ul>
 
 <form action="/pizza" method = "POST">
-  <input type = "checkbox" name = "tomatoes"> Tomatoes<br>
-  <input type = "checkbox" name = "mushrooms"> Mushrooms<br>
-  <input type = "checkbox" name = "greenolives"> Green Olives<br>
+
+  <h3>Meat</h3>
+  <input type = "checkbox" name = "ham"> Ham<br>
   <input type = "checkbox" name = "bacon"> Bacon<br>
-  <input type = "checkbox" name = "greenpeppers"> Green Peppers<br>
   <input type = "checkbox" name = "pepperoni"> Pepperoni<br>
+  <input type = "checkbox" name = "salami"> Salami<br>
+  <input type = "checkbox" name = "shrimps"> Shrimps<br>
+
+  <h3>Veg</h3>
+  <input type = "checkbox" name = "mushrooms"> Mushrooms<br>
+  <input type = "checkbox" name = "tomato"> Tomato<br>
   <input type = "checkbox" name = "pineapple"> Pineapple<br>
-  <input type = "checkbox" name = "redchillis"> Red chillis<br>
+  <input type = "checkbox" name = "red onion"> Red Onion<br>
+  <input type = "checkbox" name = "jalapenos"> Jalapeños<br>
+  <input type = "checkbox" name = "peppers"> Peppers<br>
+  <input type = "checkbox" name = "olives"> Olives<br>
+
+  <h3>Seasonings</h3>
+  <input type = "checkbox" name = "basil"> Basil<br>
+  <input type = "checkbox" name = "parsley"> Parsley<br>
+  <input type = "checkbox" name = "ground chili"> Ground Chili<br>
 
   <input type = "text" placeholder = "Please enter topping" name = "othertopping">
 
@@ -49,16 +63,82 @@ Total green peppers: <%=countTopp("greenpeppers")%><br>
 Total pepperoni: <%=countTopp("pepperoni")%><br>
 Total pineapple: <%=countTopp("pineapple")%><br>
 Total red chillis: <%=countTopp("redchillis")%><br>
-
-
-
-
-
-
-
-
 </p>
+
+<div id="results"></div>
+
 <script>
+let choices=[
+  ["red onion","tomato","mushrooms","peppers"],
+  [],
+  ["ham","pineapple"],
+  ["shrimp","bacon"],
+  ["ham","pineapple"],
+  ["red onion","tomato","mushrooms","peppers"],
+  ["pepperoni"],
+  ["red onion","tomato","mushrooms","peppers"],
+  ["tomato","mushrooms","ham","bacon"],
+  [],
+  ["ham", "pineapple"],
+  ["pineapple","ham"],  
+  ["bacon", "shrimp"],
+  ["ham", "mushrooms", "tomato"],
+  ["mushrooms", "ham", "tomato"],
+  ["bacon", "pepperoni", "salami"],
+  ["mushrooms", "peppers", "red onion", "tomato"],
+  ["jalapenos", "peppers", "pepperoni", "red onion"],
+  ["bacon", "basil", "ham", "mushrooms", "olives", "pepperoni", "tomato"],
+  ["bacon", "basil", "ham", "mushrooms", "olives", "pepperoni", "tomato"],
+  ["basil", "mushrooms", "olives", "parsley", "peppers", "red onion", "tomato"]
+];
+
+let setToppings = {
+margherita:  {name: "Margherita", ingred: ""},
+hawaiian:    {name: "Hawaiian", ingred: "ham, pineapple"},
+surfnturf:   {name: "Surf n' Turf", ingred: "bacon, shrimp"},
+farmhouse:   {name: "Farmhouse", ingred: "ham, mushrooms, tomato"},
+meatfeast:   {name: "Meat Feast", ingred: "bacon, pepperoni, salami"},
+vegetarian:  {name: "Vegetarian", ingred: "mushrooms, peppers, red onion, tomato"},
+sizzler:     {name: "Sizzler", ingred: "jalapenos, pepperoni, peppers, red onion"},
+supreme:     {name: "Supreme", ingred: "bacon, basil, ham, mushrooms, olives, pepperoni, tomato"},
+vegsupreme:  {name: "Veg Supreme", ingred: "basil, mushrooms, olives, parsley, peppers, red onion, tomato"}
+};
+
+// Join ingredients into one string
+choices = choices.map((elem)=> elem.sort().join(", "));
+//console.log("Joined: ",choices);
+
+// Merge and count duplicates
+let pizzaCount = choices.reduce(function(accChoices, currChoice) { 
+  if (currChoice in accChoices) accChoices[currChoice]++; // Detect if current choice is same as any choices already accumulated
+  else accChoices[currChoice] = 1;
+  return accChoices;
+}, {});
+//console.log("Counted: ", pizzaCount);
+//
+// Add pizza set topping names
+let topPizzas = [];
+for (let elem in pizzaCount) {
+  let nam = "Custom"; // If not overwritten with a set name it remains as this value
+  for (let tops in setToppings) {
+    if (elem == setToppings[tops].ingred) nam = setToppings[tops].name;
+  }
+  topPizzas.push ({name: nam, ingred:elem, count:pizzaCount[elem]});
+};
+//console.log("Set topping names: ",topPizzas);
+
+// Sort in order of popularity
+topPizzas.sort((a,b)=>{
+  return b.count - a.count;  
+});
+//console.log("Sorted: ",topPizzas);
+
+// Display
+let disp = document.getElementById("results");
+topPizzas.forEach((elem)=> {
+  disp.innerHTML += `<h3>${elem.name} : ${elem.count}</h3>${elem.ingred}`;
+  //disp.innerHTML +=`${elem.name}`;
+});
 
 
 </script>
