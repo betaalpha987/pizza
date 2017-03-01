@@ -12,8 +12,8 @@ let db;
 MongoClient.connect('mongodb://pizzauser:pizzauser@ds157819.mlab.com:57819/pizza', (err,database) => {
   if (err) return console.log(err);
   db = database;
-  app.listen(80, function() {
-    console.log('Listening on 80');
+  app.listen(8765, function() {
+    console.log('Listening on 8765');
   });
 });
 
