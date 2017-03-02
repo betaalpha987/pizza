@@ -108,7 +108,7 @@
     }
     .topp { /*Toppings*/
       animation: topp-anim 1s ease-in;
-
+      z-index: 4;
     }
     @keyframes topp-anim {
       from {
@@ -138,43 +138,75 @@
 </div>
 
 <script>
-dropToppings('ham');
+dropToppings('groundchili');
 
 function dropToppings(pick) {
   const topps = {
-    ham: {dist:[1,3,5,7],  src1: "piz_ing_ham.svg"},
-    bacon: {dist:[1,3,5],    src1: "piz_ing_bacon.svg"},
-    jalapenos: {dist:[0,2,4],    src1: "piz_ing_greenchilli.svg" , src2: "piz_ing_redchilli.svg"},
-    groundchili: {dist:[1,4,12,20],src1: "piz_ing_redgroundc.svg"  , src2: "piz_ing_redgroundc.svg", src3: "piz_ing_redgroundc.svg"}
+    ham: {dist:[1,3,5,7],  src: ["piz_ing_ham.svg"]},
+    bacon: {dist:[1,3,5],    src: ["piz_ing_bacon.svg"]},
+    jalapenos: {dist:[2,3,4],    src: ["piz_ing_greenchilli.svg", "piz_ing_redchilli.svg"]},
+    groundchili: {dist:[1,4,12,20],src: ["piz_ing_redgroundc.svg", "piz_ing_redgroundc.svg", "piz_ing_redgroundc.svg"]}
   };
   const topp = topps[pick];
-  console.log(topp);
-  console.log(topp.src1);
-  // Toppings distributed in disArr from the center. Each array adds to 15.
+  let toppNum = 0;
+  const toppMax = topp.dist.reduce((acc,curr)=>acc+curr); // Max number of toppings to place
+  // manage which src is dropped
   let interv = setInterval(()=>{
-    console.log("wibble");
-  },100);
-
-
-
-/*const distrib=[[1,3,4,7],[0,5,10],[1,3,5,6],[0,2,6,7],[1,4,10]];
-  nextDrop +=1;
-  if (nextDrop >=4) {
-    nextDrop = 0;
-    addTopping(toppings[toppType].src,toppNum,depth,distrib[dNum]);
+    
+    addTopping(topp.src[0],toppNum,topp.dist)
     toppNum +=1;
-    if (toppNum >= 15) { // After 20 toppings of one type go onto the next
-      toppNum = 0;
-      toppType +=1;
-      dNum +=1;
-      depth +=1;
-    }
-    if (dNum >= distrib.length) dNum = 0;
-    if (toppType >= toppings.length) toppType=0;
-  }*/
+    if (toppNum >=toppMax) clearInterval(interv);
+  },100);
 }
 
+function addTopping(tPSrc,tPNum,disArr) {
+  const frame = document.getElementById("pizza-frame");
+  const xC = 200; const yC = 190; // Offsets, for placing toppings in the center of the pizza
+  const posStagger = 10; // Max random position deviation
+  const rotStagger = 180; // Max random rotation deviation
+  const scaStagger = 0.3; // Max random scale deviation
 
+  const topping = document.createElement("img");
+  frame.appendChild(topping);
+  topping.className = "piz topp";
+  topping.src='images\\'+tPSrc;
+  topping.style.transform = 'rotate('+randPN(rotStagger)
+    + 'deg) scale(' + (1+Math.random()*scaStagger) + ')';
+  topping.style.transform
+
+  // Calc spacing between topping rings based on total no. rings
+  const ringSpace = 180 / disArr.length; 
+  // Choose ring to use based on number of toppings placed so far
+  let ring = 0;
+  if (tPNum < disArr[0]) { // Put this into a loop later
+    ring = 0;
+  }
+  else if (tPNum < (disArr[0] + disArr[1])) {
+    ring = 1;
+    tPNum -= disArr[0];
+  } else if (tPNum < (disArr[0] + disArr[1] + disArr[2])) {
+    ring = 2;
+    tPNum -= (disArr[0] + disArr[1]);
+  } else {
+    ring = 3;
+    tPNum -= (disArr[0] + disArr[1] + disArr[2]);
+  }
+  let radius = ringSpace*(ring);
+  // Determine angle in ring to place topping in (i) 
+  let angle = (tPNum/disArr[ring]) * Math.PI*2;
+
+  let x = (Math.cos(angle)*radius) + xC + randPN(posStagger);
+  let y = (Math.sin(angle)*radius) + yC + randPN(posStagger);
+
+  topping.style.left=x.toString()+"px";
+  topping.style.top=y.toString()+"px";
+
+  //toppArr.push(topping);
+}
+
+function randPN(i) { // return a random number between -i and i
+  return Math.random() * i * (Math.floor(Math.random()*2) == 1 ? 1 : -1);
+}
 
 /*  
   // Pizza effect variables
