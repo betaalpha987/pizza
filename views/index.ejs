@@ -9,126 +9,163 @@
 
 <body>
 <h1>Pizza Poller Deluxeeeee</h1>
-<ul class = "pizza">
-  <% for (let i = 0; i < pizza.length; i++) {%>
-    <li class="pizza">
-      <span><%=pizza[i].othertopping %></span><br>
-    </li>
-  <%}%>
-</ul>
 
 <form action="/pizza" method = "POST">
 
   <h3>Meat</h3>
-  <input type = "checkbox" name = "ham"> Ham<br>
-  <input type = "checkbox" name = "bacon"> Bacon<br>
-  <input type = "checkbox" name = "pepperoni"> Pepperoni<br>
-  <input type = "checkbox" name = "salami"> Salami<br>
-  <input type = "checkbox" name = "shrimps"> Shrimps<br>
+  <input class="toppCB" type = "checkbox" name = "ham"> Ham<br>
+  <input class="toppCB" type = "checkbox" name = "bacon"> Bacon<br>
+  <input class="toppCB" type = "checkbox" name = "pepperoni"> Pepperoni<br>
+  <input class="toppCB" type = "checkbox" name = "salami"> Salami<br>
+  <input class="toppCB" type = "checkbox" name = "shrimps"> Shrimps<br>
 
   <h3>Veg</h3>
-  <input type = "checkbox" name = "mushrooms"> Mushrooms<br>
-  <input type = "checkbox" name = "tomato"> Tomato<br>
-  <input type = "checkbox" name = "pineapple"> Pineapple<br>
-  <input type = "checkbox" name = "red onion"> Red Onion<br>
-  <input type = "checkbox" name = "jalapenos"> Jalapeños<br>
-  <input type = "checkbox" name = "peppers"> Peppers<br>
-  <input type = "checkbox" name = "olives"> Olives<br>
+  <input class="toppCB" type = "checkbox" name = "mushrooms"> Mushrooms<br>
+  <input class="toppCB" type = "checkbox" name = "tomato"> Tomato<br>
+  <input class="toppCB" type = "checkbox" name = "pineapple"> Pineapple<br>
+  <input class="toppCB" type = "checkbox" name = "red onion"> Red Onion<br>
+  <input class="toppCB" type = "checkbox" name = "jalapenos"> Jalapeños<br>
+  <input class="toppCB" type = "checkbox" name = "peppers"> Peppers<br>
+  <input class="toppCB" type = "checkbox" name = "olives"> Olives<br>
 
   <h3>Seasonings</h3>
-  <input type = "checkbox" name = "basil"> Basil<br>
-  <input type = "checkbox" name = "parsley"> Parsley<br>
-  <input type = "checkbox" name = "ground chili"> Ground Chili<br>
+  <input class="toppCB" type = "checkbox" name = "basil"> Basil<br>
+  <input class="toppCB" type = "checkbox" name = "parsley"> Parsley<br>
+  <input class="toppCB" type = "checkbox" name = "ground chili"> Ground Chili<br>
+  
+  <input type = "text" placeholder = "Please enter topping" name = "othertopping"><br>
 
-  <input type = "text" placeholder = "Please enter topping" name = "othertopping">
-
+  <button type="button" onclick="uncheckAll()">Margherita</button> 
+  <button type="button" onclick='setTopp("hawaiian")'>Hawaiian</button> 
+  <button type="button" onclick='setTopp("surfnturf")'>Surf n' Turf</button> 
+  <button type="button" onclick='setTopp("farmhouse")'>Farmhouse</button> 
+  <button type="button" onclick='setTopp("meatfeast")'>Meat Feast</button> 
+  <button type="button" onclick='setTopp("vegetarian")'>Vegetarian</button> 
+  <button type="button" onclick='setTopp("sizzler")'>Sizzler</button> 
+  <button type="button" onclick='setTopp("supreme")'>Supreme</button> 
+  <button type="button" onclick='setTopp("vegsupreme")'>Veg Supreme</button> 
+  <br>
   <button type = "submit">Submit</button>
 </form>
 
+<h3>Favourite Pizzas</h3>
+<p>Others have voted for:</p>
 <%
-  function countTopp(item) {
-    let num = 0;
-    for (let i = 0; i < pizza.length; i++) {
-      if (pizza[i][item]) num +=1;
-    }
-    return num;
+let setToppings = {
+margherita:  {name: "Margherita", ingred: ""},
+hawaiian:    {name: "Hawaiian", ingred: "ham, pineapple"},
+surfnturf:   {name: "Surf n' Turf", ingred: "bacon, shrimps"},
+farmhouse:   {name: "Farmhouse", ingred: "ham, mushrooms, tomato"},
+meatfeast:   {name: "Meat Feast", ingred: "bacon, ham, pepperoni"},
+vegetarian:  {name: "Vegetarian", ingred: "mushrooms, peppers, red onion, tomato"},
+sizzler:     {name: "Sizzler", ingred: "jalapenos, pepperoni, peppers, red onion"},
+supreme:     {name: "Supreme", ingred: "bacon, basil, ham, mushrooms, olives, pepperoni, tomato"},
+vegsupreme:  {name: "Veg Supreme", ingred: "basil, mushrooms, olives, parsley, peppers, red onion, tomato"}
+};
+
+// Remove non-ingredient database fields, sort and convert to string 
+let choices = pizza.map((elem)=>{
+  let arr=Object.keys(elem);
+  arr.forEach((el,ind)=>{if (el == '_id') arr.splice(ind,1);});
+  arr.forEach((el,ind)=>{if (el == 'othertopping') arr.splice(ind,1);});
+  return arr.sort().join(", ");
+});
+//console.log("Joined: ",choices);
+
+// Merge and count duplicates
+let pizzaCount = choices.reduce(function(accChoices, currChoice) { 
+  if (currChoice in accChoices) accChoices[currChoice]++; // Detect if current choice is same as any choices already accumulated
+  else accChoices[currChoice] = 1;
+  return accChoices;
+}, {});
+//console.log("Counted: ", pizzaCount);
+
+// Add pizza set topping names
+let topPizzas = [];
+for (let elem in pizzaCount) {
+  let nam = "Custom"; // If not overwritten with a set name it remains as this value
+  for (let tops in setToppings) {
+    if (elem == setToppings[tops].ingred) nam = setToppings[tops].name;
   }
+  topPizzas.push ({name: nam, ingred:elem, count:pizzaCount[elem]});
+};
+//console.log("Set topping names: ",topPizzas);
+
+// Sort in order of popularity
+topPizzas.sort((a,b)=>{
+  return b.count - a.count;  
+});
+//console.log("Sorted: ",topPizzas);
+
+// Display
+topPizzas.forEach((elem)=> {
+  %>
+  <b><%=elem.name%> : <%=elem.count%></b> : <%=elem.ingred%><br>
+  <%
+});
 %>
-<p>
-Total tomatoes: <%=countTopp("tomatoes")%><br>
-Total mushrooms: <%=countTopp("mushrooms")%><br>
-Total green olives: <%=countTopp("greenolives")%><br>
-Total bacon: <%=countTopp("bacon")%><br>
-Total green peppers: <%=countTopp("greenpeppers")%><br>
-Total pepperoni: <%=countTopp("pepperoni")%><br>
-Total pineapple: <%=countTopp("pineapple")%><br>
-Total red chillis: <%=countTopp("redchillis")%><br>
-</p>
-<div id="results"></div>
-
-<%
-  let setToppings = {
-  margherita:  {name: "Margherita", ingred: ""},
-  hawaiian:    {name: "Hawaiian", ingred: "ham, pineapple"},
-  surfnturf:   {name: "Surf n' Turf", ingred: "bacon, shrimp"},
-  farmhouse:   {name: "Farmhouse", ingred: "ham, mushrooms, tomato"},
-  meatfeast:   {name: "Meat Feast", ingred: "bacon, pepperoni, ham"},
-  vegetarian:  {name: "Vegetarian", ingred: "mushrooms, peppers, red onion, tomato"},
-  sizzler:     {name: "Sizzler", ingred: "jalapenos, pepperoni, peppers, red onion"},
-  supreme:     {name: "Supreme", ingred: "bacon, basil, ham, mushrooms, olives, pepperoni, tomato"},
-  vegsupreme:  {name: "Veg Supreme", ingred: "basil, mushrooms, olives, parsley, peppers, red onion, tomato"}
-  };
-
-  let choices = pizza.map((elem)=>{
-    //let str=Object.keys(elem).sort().join(", ")
-    //return str.replace('_id, ',"").replace('othertopping, ',"").replace('othertopping',"");
-    // Remove non-ingredient database fields, sort and convert to string 
-
-    let arr=Object.keys(elem);
-    arr.forEach((el,ind)=>{if (el == '_id') arr.splice(ind,1);});
-    arr.forEach((el,ind)=>{if (el == 'othertopping') arr.splice(ind,1);});
-    return arr.sort().join(", ");
-  });
-
-  //console.log("Joined: ",choices);
-
-  // Merge and count duplicates
-  let pizzaCount = choices.reduce(function(accChoices, currChoice) { 
-    if (currChoice in accChoices) accChoices[currChoice]++; // Detect if current choice is same as any choices already accumulated
-    else accChoices[currChoice] = 1;
-    return accChoices;
-  }, {});
-
-  //console.log("Counted: ", pizzaCount);
-  
-  // Add pizza set topping names
-  let topPizzas = [];
-  for (let elem in pizzaCount) {
-    let nam = "Custom"; // If not overwritten with a set name it remains as this value
-    for (let tops in setToppings) {
-      if (elem == setToppings[tops].ingred) nam = setToppings[tops].name;
+<h3>Other toppings Poll</h3>
+<ul class = "pizza">
+  <%
+  pizza.forEach ((elem)=> {
+    if (elem.othertopping) {
+      %>
+      <li class="pizza">
+        <span><%=elem.othertopping %></span><br>
+      </li>
+      <%
     }
-    topPizzas.push ({name: nam, ingred:elem, count:pizzaCount[elem]});
-  };
-  //console.log("Set topping names: ",topPizzas);
-
-  // Sort in order of popularity
-  topPizzas.sort((a,b)=>{
-    return b.count - a.count;  
   });
-  console.log("Sorted: ",topPizzas);
+  %>
+</ul>
 
-  // Display
-  topPizzas.forEach((elem)=> { %>
-    <b><%=elem.name%> : <%=elem.count%></b> : <%=elem.ingred%><br>
-  <% });
-
-%>
 
 <script>
+
+function tickCB(cBArr) {
+  // Ticks a checkbox named the same as every string sent as an argument 
+  cBArr.forEach((elem)=>{
+    const i=document.getElementsByName(elem)
+    i[0].checked=true;
+  });
+}
+
+function uncheckAll() {
+  const toppCBs = Array.from(document.getElementsByClassName("toppCB"));
+  toppCBs.forEach((elem)=>elem.checked = false);
+}
+
+function setTopp(kind) {
+  uncheckAll();
+  switch (kind) {
+    case 'hawaiian':
+      tickCB(["ham", "pineapple"]); 
+      break;
+    case 'surfnturf':
+      tickCB(["bacon", "shrimps"]);
+      break;
+    case 'farmhouse':
+      tickCB(["ham", "mushrooms","tomato"]);
+      break;
+    case 'meatfeast':
+      tickCB(["bacon", "ham","pepperoni"]);
+      break;
+    case 'vegetarian':
+      tickCB(["mushrooms", "peppers","red onion","tomato"]);
+      break;
+    case 'sizzler':
+      tickCB(["jalapenos", "pepperoni","peppers","red onion"]);
+      break;
+    case 'supreme':
+      tickCB(["bacon", "basil","ham","mushrooms","olives","pepperoni","tomato"]);
+      break;
+    case 'vegsupreme':
+      tickCB(["basil", "mushrooms","olives","parsley","peppers","red onion","tomato"]);
+      break;
+  }
+}
 
 </script>
 
 </body>
-
 </html>
