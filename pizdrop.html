@@ -1,0 +1,355 @@
+<!doctype html>
+
+<html lang="en">
+<!-- For proportional scaling all elements, try this: https://css-tricks.com/scaled-proportional-blocks-with-css-and-javascript/ -->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="A pizza creator and pomodoro clock in one!">
+  <meta name="author" content="Kevin Nolan">
+
+  <link href="https://fonts.googleapis.com/css?family=Catamaran" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+  <title>Pizza Pomodoro</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Catamaran', sans-serif;
+      background-image: url("images/tablecloth_yellow.svg");
+      background-size: 60%;
+    }
+
+    #pizza-frame {
+      width: 448px;
+      height: 650px;
+      top: 5vh;
+      margin: auto;
+      position:relative;
+      padding:0px;
+    }
+
+    #pomo-frame {
+      z-index:1000;
+      position: absolute;
+      top: 70%;
+      left: 15%;
+      width: 70%;
+      background-color:rgba(255,220,220,0.5);
+      text-align:center;
+      border: 2px solid white;
+      border-radius:20%;
+      padding:10px;
+    }
+    #disp-time {
+      background-color:antiquewhite;
+      width:40px; height:20px;
+      border-radius:20%;
+      font-size:3rem;
+      padding:0px 5px 0px 5px;
+    }
+    #help-frame {
+      z-index:1000;
+      position: absolute;
+      top: 40%;
+      left: 20%;
+      width: 60%;
+      background-color:rgba(255,170,100,0.5);
+      text-align:center;
+      border: 2px solid white;
+      border-radius:20%;
+      padding:10px;
+
+    }
+    #info-btn-frame {
+      position:absolute;
+      top: 5%;
+      right: 5%;
+    }
+    .btn-link {
+      color: #f55;
+      font-size:2rem;
+    }
+    .btn-warning {
+      background-color:#f55;
+      border-color:white;
+    }
+    .pomo-row {
+      margin:5px;
+    }
+
+    .piz { /*All pizza elements*/
+      position:absolute;
+      margin:0px;
+      padding:0px;
+    }
+    .bkg { /* Dough and platter*/
+      z-index:-5;
+    }
+    .t-base { /*tomato base*/
+      bottom:239px; left:28px;
+      z-index: 0;
+    }
+    .rim {
+      bottom:213px; left:3px;
+      z-index:1;
+    }
+    .c-base { /*cheese base*/
+      bottom:257px; left:45px;
+      z-index: 2;
+    }
+    .topp { /*Toppings*/
+      animation: topp-anim 1s ease-in;
+
+    }
+    @keyframes topp-anim {
+      from {
+        transform:scale(2);
+        opacity:0;
+      }
+    }
+    @keyframes pulse {
+      to {
+        opacity: 0.1;
+      }
+    
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+<audio id = "ech-chime">
+  <source src="audio\echo-chime.mp3" type="audio/mpeg">
+</audio>
+
+<div id="pizza-frame">
+  <img src="images\piz_base.svg" class="piz bkg"/>
+  <img src="images\piz_base_tom.svg" class="piz t-base"/>
+  <img src="images\piz_rim.svg" class="piz rim"/>
+  <img src="images\piz_base_cheese.svg" class="piz c-base"/>
+
+  <div id="pomo-frame">
+    <div class="pomo-row">
+      <button class="btn btn-xs btn-warning btn-cust-up" onClick="setStTime(stTime + 1)"><span class="glyphicon glyphicon-chevron-up"></button>
+      <span id="disp-time">00:00</span>
+      <button class="btn btn-xs btn-warning btn-cust-dn" onClick="setStTime(stTime - 1)"><span class="glyphicon glyphicon-chevron-down"></button><br>
+    </div>
+    <div class="btn-group pomo-row">
+      <button class="btn btn-warning btn-start"   onClick="start()">Start</button>
+      <button class="btn btn-warning btn-stop"    onClick="stop()">Stop</button>
+      <button class="btn btn-warning btn-reset"   onClick="reset()">Reset</button>
+    </div>
+    <div class="btn-group pomo-row">
+      <button class="btn btn-warning btn-pomo"    onClick="setStTime(25)">Pomodoro</button>
+      <button class="btn btn-warning btn-short"   onClick="setStTime(5)">Short break</button>
+      <button class="btn btn-warning btn-long"    onClick="setStTime(10)">Long break</button>
+    </div>
+      <div id="info-btn-frame">
+      <a class="btn btn-link" data-toggle="modal" data-target="#helpModal"><span class="glyphicon glyphicon-info-sign"></span></a>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="helpModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Pizza Pomodoro</h4>
+        </div>
+        <div class="modal-body">
+          <p>A pomodoro timer that builds a pizza for you!</p>
+          <p>Sources for icons and images:</p>
+          <ul>
+            <li><a href="http://glyphicons.com/" target="_blank">Glyphicons</a></li>
+            <li><a href="http://www.freepik.com/free-photos-vectors/background" target="_blank">Tablecloth and pizza designed by Freepik</a></li>
+          </ul>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Pizza effect variables
+  let toppNum=0;  // Num. toppings on the pizza so far for that topping type
+  let toppType=0; // Which topping object to use
+  let dNum=0;     // Which distribution array to use
+  let depth = 5;  // z-depth of topping. Can't use toppType because it eventually loops.
+  let nextDrop = 3; // Controls interval between topping dropping.
+  const toppArr =[]; // References for all toppings
+
+  // Pomodoro variables
+  let stTime = 25; let currTime = [stTime,0]; // Minutes , seconds
+  let counting = false; // Whether the clock is currently ticking down
+  let timer = 0; // holds the setInterval ID
+
+  updateDisp(false);
+
+  //POMODORO FUNCTIONS --------------------
+  function tick() {
+    dropToppings();
+    currTime [1] -=1;
+    if (currTime[0] <= 0 & currTime[1] <= 0) {
+      updateDisp(false);
+      timeIsUp();
+      clearInterval(timer);
+    } else {
+      if (currTime[1] <0) {
+        currTime[0] -=1; currTime[1] = 59;
+      }
+    }
+    updateDisp(true);
+  }
+  
+  function timeIsUp() {
+    document.getElementById("ech-chime").play();
+    document.getElementById("disp-time").style.animation = "pulse 1s infinite alternate";
+    document.title="Pizza's Ready!";
+  }
+
+  function updateDisp(updTitle) {
+    const disp = document.getElementById("disp-time");
+    let str = currTime[0] < 10 ? "0" + currTime[0] : currTime[0];
+    str += ":" + (currTime[1] < 10 ? "0" + currTime[1] : currTime[1]);
+    disp.innerHTML = str;
+    if (updTitle) document.title = str;
+  }
+
+  function start() {
+    if (!counting) {
+      timer = setInterval(tick,1000);
+      counting = true;
+    }
+  }
+
+  function stop() {
+    clearInterval(timer);
+    counting = false;
+  }
+
+  function reset() {
+    location.reload();
+    //stop();
+    //currTime = [stTime,0];
+    //updateDisp();
+  }
+
+  function setStTime(t) {
+    if (t < 1) t = 1;
+    else if (t > 60) t = 60;
+    stTime = t; currTime = [t,0];
+    updateDisp(false);
+    stop();
+  }
+
+  // PIZZA FUNCTIONS--------------------
+
+  function dropToppings() {
+  const toppings = [
+    {name: "tomatoes",           src: "piz_ing_tomato.svg"},
+    {name: "mushrooms",          src: "piz_ing_mushroom.svg"},
+    {name: "green olives",       src: "piz_ing_greenolive.svg"},
+    {name: "bacon",              src: "piz_ing_bacon.svg"},
+    {name: "green peppers",      src: "piz_ing_greenpepper.svg"},
+    {name: "pepperoni",          src: "piz_ing_pepperoni.svg"},
+    {name: "pineapple",          src: "piz_ing_pineapple.svg"},
+    {name: "red chilli peppers", src: "piz_ing_redchilli.svg"},
+    {name: "red onions",         src: "piz_ing_redonion.svg"},
+    {name: "shrimp",             src: "piz_ing_shrimp.svg"},
+    {name: "salami",             src: "piz_ing_salami.svg"},
+    {name: "parsley",            src: "piz_ing_parsley.svg"},
+    {name: "red peppers",        src: "piz_ing_redpepper.svg"},
+    {name: "green chilli peppers",src: "piz_ing_greenchilli.svg"},
+    {name: "yellow peppers",     src: "piz_ing_yellowpepper.svg"},
+    {name: "black olives",       src: "piz_ing_blackolive.svg"},
+    {name: "basil",              src: "piz_ing_basil.svg"} ];
+
+  // Toppings distributed in disArr from the center. Each array adds to 15.
+  const distrib=[[1,3,4,7],[0,5,10],[1,3,5,6],[0,2,6,7],[1,4,10]];
+  nextDrop +=1;
+  if (nextDrop >=4) {
+    nextDrop = 0;
+    addTopping(toppings[toppType].src,toppNum,depth,distrib[dNum]);
+    toppNum +=1;
+    if (toppNum >= 15) { // After 20 toppings of one type go onto the next
+      toppNum = 0;
+      toppType +=1;
+      dNum +=1;
+      depth +=1;
+    }
+    if (dNum >= distrib.length) dNum = 0;
+    if (toppType >= toppings.length) toppType=0;
+  }
+}
+
+function randPN(i) { // return a random number between -i and i
+  return Math.random() * i * (Math.floor(Math.random()*2) == 1 ? 1 : -1);
+}
+
+function addTopping(tPSrc,tPNum,depth,disArr) { // Topping img src, number, depth, distrib array
+  const frame = document.getElementById("pizza-frame");
+  const xC = 200; const yC = 190; // Offsets, for placing toppings in the center of the pizza
+  const posStagger = 10; // Max random position deviation
+  const rotStagger = 180; // Max random rotation deviation
+  const scaStagger = 0.3; // Max random scale deviation
+
+  const topping = document.createElement("img");
+  frame.appendChild(topping);
+  topping.className = "piz topp";
+  topping.src='images\\'+tPSrc;
+  topping.style.zIndex = depth;
+  topping.style.transform = 'rotate('+randPN(rotStagger)
+    + 'deg) scale(' + (1+Math.random()*scaStagger) + ')';
+  topping.style.transform
+
+  // Calc spacing between topping rings based on total no. rings
+  const ringSpace = 180 / disArr.length; 
+  // Choose ring to use based on number of toppings placed so far
+  let ring = 0;
+  if (tPNum < disArr[0]) { // Put this into a loop later
+    ring = 0;
+  }
+  else if (tPNum < (disArr[0] + disArr[1])) {
+    ring = 1;
+    tPNum -= disArr[0];
+  } else if (tPNum < (disArr[0] + disArr[1] + disArr[2])) {
+    ring = 2;
+    tPNum -= (disArr[0] + disArr[1]);
+  } else {
+    ring = 3;
+    tPNum -= (disArr[0] + disArr[1] + disArr[2]);
+  }
+  let radius = ringSpace*(ring);
+  // Determine angle in ring to place topping in (i) 
+  let angle = (tPNum/disArr[ring]) * Math.PI*2;
+
+  let x = (Math.cos(angle)*radius) + xC + randPN(posStagger);
+  let y = (Math.sin(angle)*radius) + yC + randPN(posStagger);
+
+  topping.style.left=x.toString()+"px";
+  topping.style.top=y.toString()+"px";
+
+  toppArr.push(topping);
+}
+
+</script>
+
+</body>
+
+</html>
