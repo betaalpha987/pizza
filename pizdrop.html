@@ -144,7 +144,7 @@
   <img src="images\piz_base.svg" class="piz bkg"/>
   <img src="images\piz_base_tom.svg" class="piz t-base"/>
   <img src="images\piz_rim.svg" class="piz rim"/>
-  <img src="images\piz_base_cheese.svg" class="piz c-base"/>
+  <img src="images\piz_base_cheese.svg" class="piz c-base"/ id="cheese-base">
 </div>
 <div class="menu-frames" id="menu-frame-L">
   <h3>Meat</h3>
@@ -206,36 +206,38 @@ function setTopp(kind) {
   uncheckAll();
   switch (kind) {
     case 'hawaiian':
-      tickCB(["ham", "pineapple"]); 
+      preset(["ham", "pineapple"]); 
       break;
     case 'surfnturf':
-      tickCB(["bacon", "shrimps"]);
+      preset(["bacon", "shrimps"]);
       break;
     case 'farmhouse':
-      tickCB(["ham", "mushrooms","tomato"]);
+      preset(["ham", "mushrooms","tomato"]);
       break;
     case 'meatfeast':
-      tickCB(["bacon", "ham","pepperoni"]);
+      preset(["bacon", "ham","pepperoni"]);
       break;
     case 'vegetarian':
-      tickCB(["mushrooms", "peppers","redonion","tomato"]);
+      preset(["mushrooms", "peppers","redonion","tomato"]);
       break;
     case 'sizzler':
-      tickCB(["jalapenos", "pepperoni","peppers","redonion"]);
+      preset(["jalapenos", "pepperoni","peppers","redonion"]);
       break;
     case 'supreme':
-      tickCB(["bacon", "basil","ham","mushrooms","olives","pepperoni","tomato"]);
+      preset(["bacon", "basil","ham","mushrooms","olives","pepperoni","tomato"]);
       break;
     case 'vegsupreme':
-      tickCB(["basil", "mushrooms","olives","parsley","peppers","redonion","tomato"]);
+      preset(["basil", "mushrooms","olives","parsley","peppers","redonion","tomato"]);
       break;
   }
 }
-function tickCB(cBArr) {
-  // Ticks a checkbox named the same as every string sent in the array argument
+function preset(cBArr) {
+  // Ticks a checkbox and drops topping for every string sent in the array argument
+
   cBArr.forEach((elem)=>{
     const i=document.getElementsByName(elem)
     i[0].checked=true;
+    dropToppings(elem,true);
   });
 }
 function uncheckAll() {
@@ -248,7 +250,7 @@ function uncheckAll() {
 
 // checkbox action makes a topping appear or vanish
 function cBoxChange(cBox) {
-  if (cBox.checked) dropToppings(cBox.name);
+  if (cBox.checked) dropToppings(cBox.name,false);
   else vanishToppings(cBox.name,false);
 }
 
@@ -274,36 +276,38 @@ function vanishToppings(ingred,instant) { // Instant - delete toppings without v
 }
 
 // Controls the number and type of toppings dropped
-function dropToppings(ingred) {
+function dropToppings(ingred,fast) {
   vanishToppings(ingred,true); // If original toppings are still vanishing slowly, insta-delete them
   const topp = topps[ingred];
   let toppNum = 0; // Counts toppings placed
-  let subTopp = 0; // For cycling sub-topping (green olive, black olive etc.)
+  let subTopp = 0; // For cycling sub-toppings (green olive, black olive etc.)
   const toppMax = topp.dist.reduce((acc,curr)=>acc+curr); // Max number of toppings to place
 
-  // manage which src is dropped
   topp.interv = setInterval(()=>{
-    
     addTopping(topp.src[subTopp],toppNum,topp.dist,topp.dRot,topp.obj)
     toppNum +=1;
     if (toppNum >=toppMax) clearInterval(topp.interv);
     subTopp +=1;
     if (subTopp >= topp.src.length) subTopp = 0;
-  },300/toppMax);
+  },fast? 0 : 300/toppMax); // If fast, drop all ingreds at same time, else drop all ingreds within 300ms
 }
 
 // Creates and positions each individual piece of topping 
 function addTopping(tPSrc,tPNum,disArr,dRot,objArr) {
   const frame = document.getElementById("pizza-frame");
-  const xC = 200; const yC = 190; // Offsets, for placing toppings in the center of the pizza
+  const cheeseBase = document.getElementById("cheese-base");
+  const xPizC = cheeseBase.width/2; const yPizC = cheeseBase.height/2;
+  //const xC = 215; const yC = 210; // Offsets, for placing toppings in the center of the pizza
   const posStagger = 10; // Max random position deviation
   const rotStagger = 180; // Max random rotation deviation
   const scaStagger = 0.3; // Max random scale deviation
+  let xIngC = 0; let yIngC = 0; // X and Y Center of objects, for determining position
 
   const topping = document.createElement("img");
   frame.appendChild(topping);
   topping.className = "piz topp";
   topping.src='images\\'+tPSrc;
+  xIngC=topping.width / 2; yIngC=topping.height / 2;
   topping.style.transform = 'rotate('+randPN(rotStagger)
     + 'deg) scale(' + (1+Math.random()*scaStagger) + ')';
   topping.style.transform
@@ -328,11 +332,11 @@ function addTopping(tPSrc,tPNum,disArr,dRot,objArr) {
   let radius = ringSpace*(ring);
   // Determine angle in ring to place topping in
   let angle = (tPNum/disArr[ring]+dRot) * Math.PI*2;
-  
+  console.log(xPizC,yPizC);
 
-  let x = (Math.cos(angle)*radius) + xC + randPN(posStagger);
-  let y = (Math.sin(angle)*radius) + yC + randPN(posStagger);
-
+  let x = xPizC - xIngC;//(Math.cos(angle)*radius) + xPizC + xIngC + randPN(posStagger);
+  let y = yPizC - yIngC;//(Math.sin(angle)*radius) + yPizC + yIngC + randPN(posStagger);
+//DO: Investigate why system thinks middle of cheese base is off to the side
   topping.style.left=x.toString()+"px";
   topping.style.top=y.toString()+"px";
 
