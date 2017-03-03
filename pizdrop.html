@@ -15,7 +15,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-  <title>Pizza Pomodoro</title>
+  <title>Pizza Drop</title>
 
   <style>
     * {
@@ -124,9 +124,11 @@
         opacity:0;
       }
     }
-    @keyframes pulse {
+
+    @keyframes vanish {
       to {
-        opacity: 0.1;
+        transform:scale(0.1);
+        opacity: 0;
       }
     
     }
@@ -146,55 +148,138 @@
 </div>
 <div class="menu-frames" id="menu-frame-L">
   <h3>Meat</h3>
-  <input class="toppCB" type = "checkbox" name = "ham" onchange="cBoxChange(this)"> Ham<br>
-  <input class="toppCB" type = "checkbox" name = "bacon" onchange="cBoxChange(this)"> Bacon<br>
-  <input class="toppCB" type = "checkbox" name = "pepperoni" onchange="cBoxChange(this)"> Pepperoni<br>
-  <input class="toppCB" type = "checkbox" name = "salami" onchange="cBoxChange(this)"> Salami<br>
-  <input class="toppCB" type = "checkbox" name = "shrimps" onchange="cBoxChange(this)"> Shrimps<br>
+  <input class="toppCB" type = "checkbox" name = "ham" onchange="cBoxChange(this)"> Ham &nbsp;
+  <input class="toppCB" type = "checkbox" name = "bacon" onchange="cBoxChange(this)"> Bacon &nbsp;
+  <input class="toppCB" type = "checkbox" name = "pepperoni" onchange="cBoxChange(this)"> Pepperoni &nbsp;
+  <input class="toppCB" type = "checkbox" name = "salami" onchange="cBoxChange(this)"> Salami &nbsp;
+  <input class="toppCB" type = "checkbox" name = "shrimps" onchange="cBoxChange(this)"> Shrimps &nbsp;
+
   <h3>Veg</h3>
-  <input class="toppCB" type = "checkbox" name = "jalapenos" onchange="cBoxChange(this)"> Jalapeños<br>
+  <input class="toppCB" type = "checkbox" name = "mushrooms" onchange="cBoxChange(this)"> Mushrooms &nbsp;
+  <input class="toppCB" type = "checkbox" name = "tomato" onchange="cBoxChange(this)"> Tomato &nbsp;
+  <input class="toppCB" type = "checkbox" name = "pineapple" onchange="cBoxChange(this)"> Pineapple &nbsp;
+  <input class="toppCB" type = "checkbox" name = "redonion" onchange="cBoxChange(this)"> Red Onion &nbsp;
+  <input class="toppCB" type = "checkbox" name = "jalapenos" onchange="cBoxChange(this)"> Jalapeños &nbsp;
+  <input class="toppCB" type = "checkbox" name = "peppers" onchange="cBoxChange(this)"> Peppers &nbsp;
+  <input class="toppCB" type = "checkbox" name = "olives" onchange="cBoxChange(this)"> Olives &nbsp;
 
   <h3>Seasonings</h3>
-  <input class="toppCB" type = "checkbox" name = "groundchili" onchange="cBoxChange(this)"> Ground Chili<br>
-
+  <input class="toppCB" type = "checkbox" name = "basil" onchange="cBoxChange(this)"> Basil &nbsp;
+  <input class="toppCB" type = "checkbox" name = "parsley" onchange="cBoxChange(this)"> Parsley &nbsp;
+  <input class="toppCB" type = "checkbox" name = "groundchili" onchange="cBoxChange(this)"> Ground Chili &nbsp;
+  
 </div>
 <div class="menu-frames" id="menu-frame-R">
-
+  <button type="button" onclick="uncheckAll()">Margherita</button> &nbsp;
+  <button type="button" onclick='setTopp("hawaiian")'>Hawaiian</button> &nbsp;
+  <button type="button" onclick='setTopp("surfnturf")'>Surf n' Turf</button> &nbsp;
+  <button type="button" onclick='setTopp("farmhouse")'>Farmhouse</button> &nbsp;
+  <button type="button" onclick='setTopp("meatfeast")'>Meat Feast</button> &nbsp;
+  <button type="button" onclick='setTopp("vegetarian")'>Vegetarian</button> &nbsp;
+  <button type="button" onclick='setTopp("sizzler")'>Sizzler</button> &nbsp;
+  <button type="button" onclick='setTopp("supreme")'>Supreme</button> &nbsp;
+  <button type="button" onclick='setTopp("vegsupreme")'>Veg Supreme</button> &nbsp;
 </div>
 
 <script>
 // Global topping var - ref'd by topping drop and vanish functions, also needs to be persistent to allow toppings to be vanished
-// dist: distribution array. src: source images. obj: topping objects created and deleted. interv: interval reference.
+// dist: distribution array. dRot: distrib. rotation offset. src: source images. obj: topping objects created and deleted. interv: interval reference.
 const topps = {
-  ham: {dist:[1,3,5,7],  src: ["piz_ing_ham.svg"], obj:[], interv:0 },
-  bacon: {dist:[1,3,5],    src: ["piz_ing_bacon.svg"], obj:[], inter:0},
-  jalapenos: {dist:[0,3,6],    src: ["piz_ing_greenchilli.svg", "piz_ing_redchilli.svg"], obj:[], inter:0},
-  groundchili: {dist:[1,4,12,20],src: ["piz_ing_redgroundc.svg", "piz_ing_yellowgroundc.svg", "piz_ing_orangegroundc.svg"], obj:[], inter:0}
+  ham: {dist:[1,3,6,7], dRot:0,  src: ["piz_ing_ham.svg"], obj:[], interv:0 },
+  bacon: {dist:[1,3,5], dRot:0,    src: ["piz_ing_bacon.svg"], obj:[], inter:0},
+  pepperoni: {dist:[0,3,6,7], dRot:0.5,  src: ["piz_ing_pepperoni.svg"], obj:[], interv:0 },
+  salami: {dist:[1,3,6,7], dRot:0,  src: ["piz_ing_ham.svg"], obj:[], interv:0 },
+  shrimps: {dist:[1,3,6,7], dRot:0,  src: ["piz_ing_ham.svg"], obj:[], interv:0 },
+  mushrooms: {dist:[1,3,6,7], dRot:0,  src: ["piz_ing_ham.svg"], obj:[], interv:0 },
+  tomato: {dist:[1,3,6,7], dRot:0,  src: ["piz_ing_ham.svg"], obj:[], interv:0 },
+  pineapple: {dist:[1,3,6,7], dRot:0,  src: ["piz_ing_ham.svg"], obj:[], interv:0 },
+  redonion: {dist:[1,3,6,7], dRot:0,  src: ["piz_ing_ham.svg"], obj:[], interv:0 },
+  jalapenos: {dist:[0,3,6], dRot:0,    src: ["piz_ing_greenchilli.svg", "piz_ing_redchilli.svg"], obj:[], inter:0},
+  peppers: {dist:[1,3,6,7], dRot:0,  src: ["piz_ing_ham.svg", "piz_ing_ham.svg", "piz_ing_ham.svg"], obj:[], interv:0 },
+  olives: {dist:[1,3,6,7], dRot:0,  src: ["piz_ing_ham.svg", "piz_ing_ham.svg"], obj:[], interv:0 },
+  basil: {dist:[1,3,6,7], dRot:0,  src: ["piz_ing_ham.svg"], obj:[], interv:0 },
+  parsley: {dist:[1,3,6,7], dRot:0,  src: ["piz_ing_ham.svg"], obj:[], interv:0 },
+  groundchili: {dist:[1,4,12,20], dRot:0, src: ["piz_ing_redgroundc.svg", "piz_ing_yellowgroundc.svg", "piz_ing_orangegroundc.svg"], obj:[], inter:0},
+
+  
 };
+
+function setTopp(kind) {
+  uncheckAll();
+  switch (kind) {
+    case 'hawaiian':
+      tickCB(["ham", "pineapple"]); 
+      break;
+    case 'surfnturf':
+      tickCB(["bacon", "shrimps"]);
+      break;
+    case 'farmhouse':
+      tickCB(["ham", "mushrooms","tomato"]);
+      break;
+    case 'meatfeast':
+      tickCB(["bacon", "ham","pepperoni"]);
+      break;
+    case 'vegetarian':
+      tickCB(["mushrooms", "peppers","red onion","tomato"]);
+      break;
+    case 'sizzler':
+      tickCB(["jalapenos", "pepperoni","peppers","red onion"]);
+      break;
+    case 'supreme':
+      tickCB(["bacon", "basil","ham","mushrooms","olives","pepperoni","tomato"]);
+      break;
+    case 'vegsupreme':
+      tickCB(["basil", "mushrooms","olives","parsley","peppers","red onion","tomato"]);
+      break;
+  }
+}
+function tickCB(cBArr) {
+  // Ticks a checkbox named the same as every string sent in the array argument
+  cBArr.forEach((elem)=>{
+    const i=document.getElementsByName(elem)
+    i[0].checked=true;
+  });
+}
+function uncheckAll() {
+  const toppCBs = Array.from(document.getElementsByClassName("toppCB"));
+  toppCBs.forEach((elem)=>{
+    elem.checked = false;
+    vanishToppings(elem.name,false);
+  });
+}
 
 // checkbox action makes a topping appear or vanish
 function cBoxChange(cBox) {
   if (cBox.checked) dropToppings(cBox.name);
-  else vanishToppings(cBox.name,true);
+  else vanishToppings(cBox.name,false);
 }
 
 function vanishToppings(ingred,instant) { // Instant - delete toppings without vanish anim first
   const frame = document.getElementById("pizza-frame");
   const topp = topps[ingred];
+  clearInterval(topp.interv);
+  
   if (instant) {
     clearInterval(topp.interv);
     topp.obj.forEach((elem)=> {
       frame.removeChild(elem);
     });
-    console.log(topp.obj);
     topp.obj = [];
+  } else {
+    topp.obj.forEach((elem)=> {
+      elem.style.animation="vanish 300ms 1";
+    })
+    topp.interv=setTimeout(()=>{
+      vanishToppings(ingred,true);
+    },300);
 
-  } else console.log("To be added");
+  }
 
 }
 
 // Controls the number and type of toppings dropped
 function dropToppings(ingred) {
+  vanishToppings(ingred,true); // If original toppings are still vanishing slowly, insta-delete them
   const topp = topps[ingred];
   let toppNum = 0; // Counts toppings placed
   let subTopp = 0; // For cycling sub-topping (green olive, black olive etc.)
@@ -203,7 +288,7 @@ function dropToppings(ingred) {
   // manage which src is dropped
   topp.interv = setInterval(()=>{
     
-    addTopping(topp.src[subTopp],toppNum,topp.dist, topp.obj)
+    addTopping(topp.src[subTopp],toppNum,topp.dist,topp.dRot,topp.obj)
     toppNum +=1;
     if (toppNum >=toppMax) clearInterval(topp.interv);
     subTopp +=1;
@@ -212,7 +297,7 @@ function dropToppings(ingred) {
 }
 
 // Creates and positions each individual piece of topping 
-function addTopping(tPSrc,tPNum,disArr,objArr) {
+function addTopping(tPSrc,tPNum,disArr,dRot,objArr) {
   const frame = document.getElementById("pizza-frame");
   const xC = 200; const yC = 190; // Offsets, for placing toppings in the center of the pizza
   const posStagger = 10; // Max random position deviation
@@ -231,7 +316,7 @@ function addTopping(tPSrc,tPNum,disArr,objArr) {
   const ringSpace = 180 / disArr.length; 
   // Choose ring to use based on number of toppings placed so far
   let ring = 0;
-  if (tPNum < disArr[0]) { // Put this into a loop later
+  if (tPNum < disArr[0]) {
     ring = 0;
   }
   else if (tPNum < (disArr[0] + disArr[1])) {
@@ -245,8 +330,9 @@ function addTopping(tPSrc,tPNum,disArr,objArr) {
     tPNum -= (disArr[0] + disArr[1] + disArr[2]);
   }
   let radius = ringSpace*(ring);
-  // Determine angle in ring to place topping in (i) 
-  let angle = (tPNum/disArr[ring]) * Math.PI*2;
+  // Determine angle in ring to place topping in
+  let angle = (tPNum/disArr[ring]+dRot) * Math.PI*2;
+  
 
   let x = (Math.cos(angle)*radius) + xC + randPN(posStagger);
   let y = (Math.sin(angle)*radius) + yC + randPN(posStagger);
