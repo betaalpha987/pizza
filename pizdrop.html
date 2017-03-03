@@ -37,18 +37,26 @@
       padding:0px;
     }
 
-    #pomo-frame {
+    .menu-frames {
       z-index:1000;
       position: absolute;
-      top: 70%;
-      left: 15%;
-      width: 70%;
+      width: 30%;
+      max-width: 200px;
+      height:100%;
       background-color:rgba(255,220,220,0.5);
       text-align:center;
       border: 2px solid white;
-      border-radius:20%;
-      padding:10px;
+      padding:3px;
     }
+    #menu-frame-L {
+      top: 0%;
+      left: 0%;
+    }
+    #menu-frame-R {
+      top: 0%;
+      right: 0%;
+    }
+
     #disp-time {
       background-color:antiquewhite;
       width:40px; height:20px;
@@ -107,7 +115,7 @@
       z-index: 2;
     }
     .topp { /*Toppings*/
-      animation: topp-anim 1s ease-in;
+      animation: topp-anim 300ms ease-in;
       z-index: 4;
     }
     @keyframes topp-anim {
@@ -136,30 +144,75 @@
   <img src="images\piz_rim.svg" class="piz rim"/>
   <img src="images\piz_base_cheese.svg" class="piz c-base"/>
 </div>
+<div class="menu-frames" id="menu-frame-L">
+  <h3>Meat</h3>
+  <input class="toppCB" type = "checkbox" name = "ham" onchange="cBoxChange(this)"> Ham<br>
+  <input class="toppCB" type = "checkbox" name = "bacon" onchange="cBoxChange(this)"> Bacon<br>
+  <input class="toppCB" type = "checkbox" name = "pepperoni" onchange="cBoxChange(this)"> Pepperoni<br>
+  <input class="toppCB" type = "checkbox" name = "salami" onchange="cBoxChange(this)"> Salami<br>
+  <input class="toppCB" type = "checkbox" name = "shrimps" onchange="cBoxChange(this)"> Shrimps<br>
+  <h3>Veg</h3>
+  <input class="toppCB" type = "checkbox" name = "jalapenos" onchange="cBoxChange(this)"> Jalapeños<br>
+
+  <h3>Seasonings</h3>
+  <input class="toppCB" type = "checkbox" name = "groundchili" onchange="cBoxChange(this)"> Ground Chili<br>
+
+</div>
+<div class="menu-frames" id="menu-frame-R">
+
+</div>
 
 <script>
-dropToppings('groundchili');
+// Global topping var - ref'd by topping drop and vanish functions, also needs to be persistent to allow toppings to be vanished
+// dist: distribution array. src: source images. obj: topping objects created and deleted. interv: interval reference.
+const topps = {
+  ham: {dist:[1,3,5,7],  src: ["piz_ing_ham.svg"], obj:[], interv:0 },
+  bacon: {dist:[1,3,5],    src: ["piz_ing_bacon.svg"], obj:[], inter:0},
+  jalapenos: {dist:[0,3,6],    src: ["piz_ing_greenchilli.svg", "piz_ing_redchilli.svg"], obj:[], inter:0},
+  groundchili: {dist:[1,4,12,20],src: ["piz_ing_redgroundc.svg", "piz_ing_yellowgroundc.svg", "piz_ing_orangegroundc.svg"], obj:[], inter:0}
+};
 
-function dropToppings(pick) {
-  const topps = {
-    ham: {dist:[1,3,5,7],  src: ["piz_ing_ham.svg"]},
-    bacon: {dist:[1,3,5],    src: ["piz_ing_bacon.svg"]},
-    jalapenos: {dist:[2,3,4],    src: ["piz_ing_greenchilli.svg", "piz_ing_redchilli.svg"]},
-    groundchili: {dist:[1,4,12,20],src: ["piz_ing_redgroundc.svg", "piz_ing_redgroundc.svg", "piz_ing_redgroundc.svg"]}
-  };
-  const topp = topps[pick];
-  let toppNum = 0;
+// checkbox action makes a topping appear or vanish
+function cBoxChange(cBox) {
+  if (cBox.checked) dropToppings(cBox.name);
+  else vanishToppings(cBox.name,true);
+}
+
+function vanishToppings(ingred,instant) { // Instant - delete toppings without vanish anim first
+  const frame = document.getElementById("pizza-frame");
+  const topp = topps[ingred];
+  if (instant) {
+    clearInterval(topp.interv);
+    topp.obj.forEach((elem)=> {
+      frame.removeChild(elem);
+    });
+    console.log(topp.obj);
+    topp.obj = [];
+
+  } else console.log("To be added");
+
+}
+
+// Controls the number and type of toppings dropped
+function dropToppings(ingred) {
+  const topp = topps[ingred];
+  let toppNum = 0; // Counts toppings placed
+  let subTopp = 0; // For cycling sub-topping (green olive, black olive etc.)
   const toppMax = topp.dist.reduce((acc,curr)=>acc+curr); // Max number of toppings to place
+
   // manage which src is dropped
-  let interv = setInterval(()=>{
+  topp.interv = setInterval(()=>{
     
-    addTopping(topp.src[0],toppNum,topp.dist)
+    addTopping(topp.src[subTopp],toppNum,topp.dist, topp.obj)
     toppNum +=1;
-    if (toppNum >=toppMax) clearInterval(interv);
-  },100);
+    if (toppNum >=toppMax) clearInterval(topp.interv);
+    subTopp +=1;
+    if (subTopp >= topp.src.length) subTopp = 0;
+  },30);
 }
 
-function addTopping(tPSrc,tPNum,disArr) {
+// Creates and positions each individual piece of topping 
+function addTopping(tPSrc,tPNum,disArr,objArr) {
   const frame = document.getElementById("pizza-frame");
   const xC = 200; const yC = 190; // Offsets, for placing toppings in the center of the pizza
   const posStagger = 10; // Max random position deviation
@@ -201,119 +254,13 @@ function addTopping(tPSrc,tPNum,disArr) {
   topping.style.left=x.toString()+"px";
   topping.style.top=y.toString()+"px";
 
-  //toppArr.push(topping);
+  objArr.push(topping);
 }
 
 function randPN(i) { // return a random number between -i and i
   return Math.random() * i * (Math.floor(Math.random()*2) == 1 ? 1 : -1);
 }
 
-/*  
-  // Pizza effect variables
-  let toppNum=0;  // Num. toppings on the pizza so far for that topping type
-  let toppType=0; // Which topping object to use
-  let dNum=0;     // Which distribution array to use
-  let depth = 5;  // z-depth of topping. Can't use toppType because it eventually loops.
-  let nextDrop = 3; // Controls interval between topping dropping.
-  const toppArr =[]; // References for all toppings
-
-  // Pomodoro variables
-  let stTime = 25; let currTime = [stTime,0]; // Minutes , seconds
-  let counting = false; // Whether the clock is currently ticking down
-  let timer = 0; // holds the setInterval ID
-
-  updateDisp(false);
-
-  // PIZZA FUNCTIONS--------------------
-
-  function dropToppings() {
-  const toppings = [
-    {name: "tomatoes",           src: "piz_ing_tomato.svg"},
-    {name: "mushrooms",          src: "piz_ing_mushroom.svg"},
-    {name: "green olives",       src: "piz_ing_greenolive.svg"},
-    {name: "bacon",              src: "piz_ing_bacon.svg"},
-    {name: "green peppers",      src: "piz_ing_greenpepper.svg"},
-    {name: "pepperoni",          src: "piz_ing_pepperoni.svg"},
-    {name: "pineapple",          src: "piz_ing_pineapple.svg"},
-    {name: "red chilli peppers", src: "piz_ing_redchilli.svg"},
-    {name: "red onions",         src: "piz_ing_redonion.svg"},
-    {name: "shrimp",             src: "piz_ing_shrimp.svg"},
-    {name: "salami",             src: "piz_ing_salami.svg"},
-    {name: "parsley",            src: "piz_ing_parsley.svg"},
-    {name: "red peppers",        src: "piz_ing_redpepper.svg"},
-    {name: "green chilli peppers",src: "piz_ing_greenchilli.svg"},
-    {name: "yellow peppers",     src: "piz_ing_yellowpepper.svg"},
-    {name: "black olives",       src: "piz_ing_blackolive.svg"},
-    {name: "basil",              src: "piz_ing_basil.svg"} ];
-
-  // Toppings distributed in disArr from the center. Each array adds to 15.
-  const distrib=[[1,3,4,7],[0,5,10],[1,3,5,6],[0,2,6,7],[1,4,10]];
-  nextDrop +=1;
-  if (nextDrop >=4) {
-    nextDrop = 0;
-    addTopping(toppings[toppType].src,toppNum,depth,distrib[dNum]);
-    toppNum +=1;
-    if (toppNum >= 15) { // After 20 toppings of one type go onto the next
-      toppNum = 0;
-      toppType +=1;
-      dNum +=1;
-      depth +=1;
-    }
-    if (dNum >= distrib.length) dNum = 0;
-    if (toppType >= toppings.length) toppType=0;
-  }
-}
-
-function randPN(i) { // return a random number between -i and i
-  return Math.random() * i * (Math.floor(Math.random()*2) == 1 ? 1 : -1);
-}
-
-function addTopping(tPSrc,tPNum,depth,disArr) { // Topping img src, number, depth, distrib array
-  const frame = document.getElementById("pizza-frame");
-  const xC = 200; const yC = 190; // Offsets, for placing toppings in the center of the pizza
-  const posStagger = 10; // Max random position deviation
-  const rotStagger = 180; // Max random rotation deviation
-  const scaStagger = 0.3; // Max random scale deviation
-
-  const topping = document.createElement("img");
-  frame.appendChild(topping);
-  topping.className = "piz topp";
-  topping.src='images\\'+tPSrc;
-  topping.style.zIndex = depth;
-  topping.style.transform = 'rotate('+randPN(rotStagger)
-    + 'deg) scale(' + (1+Math.random()*scaStagger) + ')';
-  topping.style.transform
-
-  // Calc spacing between topping rings based on total no. rings
-  const ringSpace = 180 / disArr.length; 
-  // Choose ring to use based on number of toppings placed so far
-  let ring = 0;
-  if (tPNum < disArr[0]) { // Put this into a loop later
-    ring = 0;
-  }
-  else if (tPNum < (disArr[0] + disArr[1])) {
-    ring = 1;
-    tPNum -= disArr[0];
-  } else if (tPNum < (disArr[0] + disArr[1] + disArr[2])) {
-    ring = 2;
-    tPNum -= (disArr[0] + disArr[1]);
-  } else {
-    ring = 3;
-    tPNum -= (disArr[0] + disArr[1] + disArr[2]);
-  }
-  let radius = ringSpace*(ring);
-  // Determine angle in ring to place topping in (i) 
-  let angle = (tPNum/disArr[ring]) * Math.PI*2;
-
-  let x = (Math.cos(angle)*radius) + xC + randPN(posStagger);
-  let y = (Math.sin(angle)*radius) + yC + randPN(posStagger);
-
-  topping.style.left=x.toString()+"px";
-  topping.style.top=y.toString()+"px";
-
-  toppArr.push(topping);
-}
-*/
 </script>
 
 </body>
