@@ -184,22 +184,33 @@
 <script>
 // Global topping var - ref'd by topping drop and vanish functions, also needs to be persistent to allow toppings to be vanished
 // dist: distribution array. dRot: distrib. rotation offset. src: source images. obj: topping objects created and deleted. interv: interval reference.
+// Not shown (calculated and added later) is xC and yC: x and y center of obj image, in pixels.
 const topps = {
-  ham: {dist:[1,3,6,7], dRot:0,  src: ["piz_ing_ham.svg"], obj:[], interv:0 },
-  bacon: {dist:[1,3,5], dRot:0,    src: ["piz_ing_bacon.svg"], obj:[], inter:0},
+  ham: {dist:[0,3,6,7], dRot:0.1,  src: ["piz_ing_ham.svg"], obj:[], interv:0 },
+  bacon: {dist:[1,3,5], dRot:0.2,    src: ["piz_ing_bacon.svg"], obj:[], inter:0},
   pepperoni: {dist:[0,3,6,7], dRot:0.5,  src: ["piz_ing_pepperoni.svg"], obj:[], interv:0 },
   salami: {dist:[1,3,5], dRot:0.75,  src: ["piz_ing_salami.svg"], obj:[], interv:0 },
-  shrimps: {dist:[0,3,6,7], dRot:0,  src: ["piz_ing_shrimp.svg"], obj:[], interv:0 },
-  mushrooms: {dist:[1,3,6,7], dRot:0,  src: ["piz_ing_mushroom.svg"], obj:[], interv:0 },
-  tomato: {dist:[1,3,6,7], dRot:0,  src: ["piz_ing_tomato.svg"], obj:[], interv:0 },
-  pineapple: {dist:[1,3,6,7], dRot:0,  src: ["piz_ing_pineapple.svg"], obj:[], interv:0 },
-  redonion: {dist:[1,3,6,7], dRot:0,  src: ["piz_ing_redonion.svg"], obj:[], interv:0 },
-  jalapenos: {dist:[0,3,6], dRot:0,    src: ["piz_ing_greenchilli.svg", "piz_ing_redchilli.svg"], obj:[], inter:0},
-  peppers: {dist:[1,3,6,7], dRot:0,  src: ["piz_ing_greenpepper.svg", "piz_ing_redpepper.svg", "piz_ing_yellowpepper.svg"], obj:[], interv:0 },
-  olives: {dist:[1,3,6,7], dRot:0,  src: ["piz_ing_greenolive.svg", "piz_ing_blackolive.svg"], obj:[], interv:0 },
-  basil: {dist:[0,2,5], dRot:0,  src: ["piz_ing_basil.svg"], obj:[], interv:0 },
+  shrimps: {dist:[0,3,6,7], dRot:0.3,  src: ["piz_ing_shrimp.svg"], obj:[], interv:0 },
+  mushrooms: {dist:[1,3,6,7], dRot:0.4,  src: ["piz_ing_mushroom.svg"], obj:[], interv:0 },
+  tomato: {dist:[1,3,6,7], dRot:0.1,  src: ["piz_ing_tomato.svg"], obj:[], interv:0 },
+  pineapple: {dist:[1,0,6], dRot:0.1,  src: ["piz_ing_pineapple.svg"], obj:[], interv:0 },
+  redonion: {dist:[0,3,7], dRot:0.6,  src: ["piz_ing_redonion.svg"], obj:[], interv:0 },
+  jalapenos: {dist:[0,3,6], dRot:0.7,    src: ["piz_ing_greenchilli.svg", "piz_ing_redchilli.svg"], obj:[], inter:0},
+  peppers: {dist:[0,3,7], dRot:0.8,  src: ["piz_ing_greenpepper.svg", "piz_ing_redpepper.svg", "piz_ing_yellowpepper.svg"], obj:[], interv:0 },
+  olives: {dist:[1,3,6,7], dRot:0.25,  src: ["piz_ing_greenolive.svg", "piz_ing_blackolive.svg"], obj:[], interv:0 },
+  basil: {dist:[0,2,5], dRot:0.35,  src: ["piz_ing_basil.svg"], obj:[], interv:0 },
   parsley: {dist:[0,2,5], dRot:0.75,  src: ["piz_ing_parsley.svg"], obj:[], interv:0 },
   groundchili: {dist:[1,4,12,20], dRot:0, src: ["piz_ing_redgroundc.svg", "piz_ing_yellowgroundc.svg", "piz_ing_orangegroundc.svg"], obj:[], inter:0},
+};
+
+// Preload every ingredient image and add h and w fields to each object
+for (let ob in topps) {
+  let thisImg = new Image();
+  thisImg.src="images\\" + topps[ob].src[0];
+  thisImg.onload=(()=>{
+    topps[ob].xC=thisImg.width / 2;
+    topps[ob].yC=thisImg.height / 2;
+  });
 };
 
 function setTopp(kind) {
@@ -224,20 +235,23 @@ function setTopp(kind) {
       preset(["jalapenos", "pepperoni","peppers","redonion"]);
       break;
     case 'supreme':
-      preset(["bacon", "basil","ham","mushrooms","olives","pepperoni","tomato"]);
+      preset(["bacon", "ham","mushrooms","olives","pepperoni","tomato","basil"]);
       break;
     case 'vegsupreme':
-      preset(["basil", "mushrooms","olives","parsley","peppers","redonion","tomato"]);
+      preset(["mushrooms","olives","peppers","redonion","tomato","parsley","basil"]);
       break;
   }
 }
 function preset(cBArr) {
+  let wait = 0; // A tiny pause between topping drops to allow them to be added in layers
   // Ticks a checkbox and drops topping for every string sent in the array argument
-
   cBArr.forEach((elem)=>{
     const i=document.getElementsByName(elem)
     i[0].checked=true;
-    dropToppings(elem,true);
+    elem.interv = setTimeout(()=>{
+      dropToppings(elem,true);
+    },100*wait);
+    wait +=1;
   });
 }
 function uncheckAll() {
@@ -284,7 +298,7 @@ function dropToppings(ingred,fast) {
   const toppMax = topp.dist.reduce((acc,curr)=>acc+curr); // Max number of toppings to place
 
   topp.interv = setInterval(()=>{
-    addTopping(topp.src[subTopp],toppNum,topp.dist,topp.dRot,topp.obj)
+    addTopping(topp.src[subTopp],topp.xC,topp.yC,toppNum,topp.dist,topp.dRot,topp.obj)
     toppNum +=1;
     if (toppNum >=toppMax) clearInterval(topp.interv);
     subTopp +=1;
@@ -293,21 +307,17 @@ function dropToppings(ingred,fast) {
 }
 
 // Creates and positions each individual piece of topping 
-function addTopping(tPSrc,tPNum,disArr,dRot,objArr) {
+function addTopping(tPSrc,tpXC,tpYC,tPNum,disArr,dRot,objArr) {
   const frame = document.getElementById("pizza-frame");
-  const cheeseBase = document.getElementById("cheese-base");
-  const xPizC = cheeseBase.width/2; const yPizC = cheeseBase.height/2;
-  //const xC = 215; const yC = 210; // Offsets, for placing toppings in the center of the pizza
-  const posStagger = 10; // Max random position deviation
+  const xPizC = 224; const yPizC = 215; // X and Y Center of pizza
+  const posStagger = 5; // Max random position deviation
   const rotStagger = 180; // Max random rotation deviation
-  const scaStagger = 0.3; // Max random scale deviation
-  let xIngC = 0; let yIngC = 0; // X and Y Center of objects, for determining position
+  const scaStagger = 0.2; // Max random scale deviation
 
   const topping = document.createElement("img");
   frame.appendChild(topping);
   topping.className = "piz topp";
   topping.src='images\\'+tPSrc;
-  xIngC=topping.width / 2; yIngC=topping.height / 2;
   topping.style.transform = 'rotate('+randPN(rotStagger)
     + 'deg) scale(' + (1+Math.random()*scaStagger) + ')';
   topping.style.transform
@@ -332,11 +342,9 @@ function addTopping(tPSrc,tPNum,disArr,dRot,objArr) {
   let radius = ringSpace*(ring);
   // Determine angle in ring to place topping in
   let angle = (tPNum/disArr[ring]+dRot) * Math.PI*2;
-  console.log(xPizC,yPizC);
 
-  let x = xPizC - xIngC;//(Math.cos(angle)*radius) + xPizC + xIngC + randPN(posStagger);
-  let y = yPizC - yIngC;//(Math.sin(angle)*radius) + yPizC + yIngC + randPN(posStagger);
-//DO: Investigate why system thinks middle of cheese base is off to the side
+  let x = (Math.cos(angle)*radius) + xPizC - tpXC + randPN(posStagger);
+  let y = (Math.sin(angle)*radius) + yPizC - tpYC + randPN(posStagger);
   topping.style.left=x.toString()+"px";
   topping.style.top=y.toString()+"px";
 
