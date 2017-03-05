@@ -170,6 +170,7 @@
   
 </div>
 <div class="menu-frames" id="menu-frame-R">
+  <h3>Classic Favourites</h3>
   <button type="button" onclick="uncheckAll()">Margherita</button> &nbsp;
   <button type="button" onclick='setTopp("hawaiian")'>Hawaiian</button> &nbsp;
   <button type="button" onclick='setTopp("surfnturf")'>Surf n' Turf</button> &nbsp;
@@ -179,6 +180,8 @@
   <button type="button" onclick='setTopp("sizzler")'>Sizzler</button> &nbsp;
   <button type="button" onclick='setTopp("supreme")'>Supreme</button> &nbsp;
   <button type="button" onclick='setTopp("vegsupreme")'>Veg Supreme</button> &nbsp;
+  <p>Create your favourite pizza then press the button</p>
+  <button 
 </div>
 
 <script>
@@ -202,7 +205,6 @@ const topps = {
   parsley: {dist:[0,2,5], dRot:0.75,  src: ["piz_ing_parsley.svg"], obj:[], interv:0 },
   groundchili: {dist:[1,4,12,20], dRot:0, src: ["piz_ing_redgroundc.svg", "piz_ing_yellowgroundc.svg", "piz_ing_orangegroundc.svg"], obj:[], inter:0},
 };
-
 // Preload every ingredient image and add h and w fields to each object
 for (let ob in topps) {
   let thisImg = new Image();
@@ -213,36 +215,22 @@ for (let ob in topps) {
   });
 };
 
+const setToppings = { // Toppings are dropped in order onto pizza, so seasonings should go last.
+margherita:  {name: "Margherita", ingred: []},
+hawaiian:    {name: "Hawaiian", ingred: ["ham", "pineapple"]},
+surfnturf:   {name: "Surf n' Turf", ingred: ["bacon", "shrimps"]},
+farmhouse:   {name: "Farmhouse", ingred: ["ham", "mushrooms","tomato"]},
+meatfeast:   {name: "Meat Feast", ingred: ["bacon", "ham","pepperoni"]},
+vegetarian:  {name: "Vegetarian", ingred: ["mushrooms", "peppers","redonion","tomato"]},
+sizzler:     {name: "Sizzler", ingred: ["jalapenos", "pepperoni","peppers","redonion"]},
+supreme:     {name: "Supreme", ingred: ["bacon", "ham","mushrooms","olives","pepperoni","tomato","basil"]},
+vegsupreme:  {name: "Veg Supreme", ingred: ["mushrooms","olives","peppers","redonion","tomato","parsley","basil"]}
+};
+
 function setTopp(kind) {
   uncheckAll();
-  switch (kind) {
-    case 'hawaiian':
-      preset(["ham", "pineapple"]); 
-      break;
-    case 'surfnturf':
-      preset(["bacon", "shrimps"]);
-      break;
-    case 'farmhouse':
-      preset(["ham", "mushrooms","tomato"]);
-      break;
-    case 'meatfeast':
-      preset(["bacon", "ham","pepperoni"]);
-      break;
-    case 'vegetarian':
-      preset(["mushrooms", "peppers","redonion","tomato"]);
-      break;
-    case 'sizzler':
-      preset(["jalapenos", "pepperoni","peppers","redonion"]);
-      break;
-    case 'supreme':
-      preset(["bacon", "ham","mushrooms","olives","pepperoni","tomato","basil"]);
-      break;
-    case 'vegsupreme':
-      preset(["mushrooms","olives","peppers","redonion","tomato","parsley","basil"]);
-      break;
-  }
-}
-function preset(cBArr) {
+  const cBArr = setToppings[kind].ingred;
+  console.log(cBArr);
   let wait = 0; // A tiny pause between topping drops to allow them to be added in layers
   // Ticks a checkbox and drops topping for every string sent in the array argument
   cBArr.forEach((elem)=>{

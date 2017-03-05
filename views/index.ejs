@@ -51,16 +51,16 @@
 <h3>Favourite Pizzas</h3>
 <p>Others have voted for:</p>
 <%
-let setToppings = {
-margherita:  {name: "Margherita", ingred: ""},
-hawaiian:    {name: "Hawaiian", ingred: "ham, pineapple"},
-surfnturf:   {name: "Surf n' Turf", ingred: "bacon, shrimps"},
-farmhouse:   {name: "Farmhouse", ingred: "ham, mushrooms, tomato"},
-meatfeast:   {name: "Meat Feast", ingred: "bacon, ham, pepperoni"},
-vegetarian:  {name: "Vegetarian", ingred: "mushrooms, peppers, red onion, tomato"},
-sizzler:     {name: "Sizzler", ingred: "jalapenos, pepperoni, peppers, red onion"},
-supreme:     {name: "Supreme", ingred: "bacon, ham, mushrooms, olives, pepperoni, tomato, basil"},
-vegsupreme:  {name: "Veg Supreme", ingred: "mushrooms, olives, peppers, red onion, tomato, parsley, basil"}
+const setToppings = { // Toppings are dropped in order onto pizza, so seasonings should go last.
+margherita:  {name: "Margherita", ingred: []},
+hawaiian:    {name: "Hawaiian", ingred: ["ham", "pineapple"]},
+surfnturf:   {name: "Surf n' Turf", ingred: ["bacon", "shrimps"]},
+farmhouse:   {name: "Farmhouse", ingred: ["ham", "mushrooms","tomato"]},
+meatfeast:   {name: "Meat Feast", ingred: ["bacon", "ham","pepperoni"]},
+vegetarian:  {name: "Vegetarian", ingred: ["mushrooms", "peppers","redonion","tomato"]},
+sizzler:     {name: "Sizzler", ingred: ["jalapenos", "pepperoni","peppers","redonion"]},
+supreme:     {name: "Supreme", ingred: ["bacon", "ham","mushrooms","olives","pepperoni","tomato","basil"]},
+vegsupreme:  {name: "Veg Supreme", ingred: ["mushrooms","olives","peppers","redonion","tomato","parsley","basil"]}
 };
 
 // Remove non-ingredient database fields, sort and convert to string 
@@ -104,14 +104,14 @@ topPizzas.forEach((elem)=> {
   <%
 });
 %>
-<h3>Other toppings Poll</h3>
+<h3>Other toppings Poll, dude</h3>
 <ul class = "pizza">
   <%
-  pizza.forEach ((elem)=> {
-    if (elem.othertopping) {
+  newToppings.forEach ((elem)=> {
+    if (elem.topping) {
       %>
       <li class="pizza">
-        <span><%=elem.othertopping %></span><br>
+        <span><%=elem.topping %></span><br>
       </li>
       <%
     }

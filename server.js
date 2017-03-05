@@ -18,15 +18,17 @@ MongoClient.connect(process.env.DATABASE_URL, (err,database) => {
 });
 
 app.get('/', (req, res) => {
-  db.collection('pizza').find().toArray(function(err,result) {
-    if (err) return console.log(err);
-    //renders index.ejs
-    res.render('index.ejs', {pizza:result});
+  db.collection('pizza').find().toArray(function(err,pResult) {
+    if (err) return console.log('Pizza collection get error',err);
+    db.collection('newtoppings').find().toArray(function(err,nTResult) {
+      if (err) return console.log('newtoppings collection get error', err);
+      //renders index.ejs
+      res.render('index.ejs', {pizza:pResult,newToppings:nTResult});
+    })
   });
 });
 
 app.post('/pizza', (req,res) => {
-  //console.log(req.body)
   db.collection('pizza').save(req.body, (err,result) =>{
     if (err) return console.log(err)
 
