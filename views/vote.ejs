@@ -1,0 +1,83 @@
+<!DOCTYPE HTML>
+<html lang = "en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pizza Poller Deluxe</title>
+</head>
+
+<body>
+<h1>Pizza Poller Deluxeeeee</h1>
+
+<form action="/newtoppings" method = "POST">
+
+  <input type = "text" placeholder = "Please enter topping" name = "othertopping"><br>
+
+  <button type = "submit">Submit</button>
+</form>
+
+<h3>Favourite Pizzas</h3>
+<p>Others have voted for:</p>
+<%
+
+// Remove non-ingredient database fields, sort and convert to string 
+let choices = pizzas.map((elem)=>{
+  let arr=Object.keys(elem);
+  arr.forEach((el,ind)=>{if (el == '_id') arr.splice(ind,1);});
+  return arr.sort();
+});
+//console.log("Toppings collection to array: ",choices);
+
+// Merge and count duplicates
+let pizzaCount = choices.reduce(function(accChoices, currChoice) { 
+  if (currChoice in accChoices) accChoices[currChoice]++; // Detect if current choice is same as any choices already accumulated
+  else accChoices[currChoice] = 1;
+  return accChoices;
+}, {});
+//console.log("Counted: ", pizzaCount);
+
+// Add pizza set topping names
+let topPizzas = [];
+for (let elem in pizzaCount) {
+  let nam = "Custom"; // If not overwritten with a set name it remains as this value
+  for (let tops in setToppings) {
+    if (elem == setToppings[tops].ingred) nam = setToppings[tops].name;
+  }
+  topPizzas.push ({name: nam, ingred:elem, count:pizzaCount[elem]});
+};
+//console.log("Set topping names: ",topPizzas);
+
+// Sort in order of popularity
+topPizzas.sort((a,b)=>{
+  return b.count - a.count;  
+});
+//console.log("Sorted: ",topPizzas);
+
+// Display
+topPizzas.forEach((elem)=> {
+  %>
+  <b><%=elem.name%> : <%=elem.count%></b> : <%=elem.ingred%><br>
+  <%
+});
+%>
+<h3>Other toppings Poll</h3>
+<ul class = "pizza">
+  <%
+  newToppings.forEach ((elem)=> {
+    if (elem.topping) {
+      %>
+      <li class="pizza">
+        <span><%=elem.topping %></span><br>
+      </li>
+      <%
+    }
+  });
+  %>
+</ul>
+
+
+<script>
+
+</script>
+
+</body>
+</html>
