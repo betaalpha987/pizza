@@ -1,31 +1,21 @@
-<!doctype html>
-
-<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <meta name="description" content="A pizza creator and pomodoro clock in one!">
+  <meta name="description" content="A pizza creator!">
   <meta name="author" content="Kevin Nolan">
 
   <link href="https://fonts.googleapis.com/css?family=Catamaran" rel="stylesheet">
-
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
+  <link rel = "stylesheet" href="/stylesheets/style.css">
+
   <title>Pizza Drop</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Catamaran', sans-serif;
-      background-image: url("images/tablecloth_yellow.svg");
-      background-size: 60%;
-    }
+    /* This is page-specific CSS not otherwise handled in style.css*/
 
     #pizza-frame {
       width: 448px;
@@ -183,140 +173,9 @@
   <button>Submit</button>
 </div>
 
-<script src="toppings.js"> // Holds the topps and setToppings objects </script> 
 <script>
-// Global topping var - ref'd by topping drop and vanish functions, also needs to be persistent to allow toppings to be vanished
-// dist: distribution array. dRot: distrib. rotation offset. src: source images. obj: topping objects created and deleted. interv: interval reference.
-// Not shown (calculated and added later) is xC and yC: x and y center of obj image, in pixels.
-
-// Preload every ingredient image and add h and w fields to each object
-for (let ob in topps) {
-  let thisImg = new Image();
-  thisImg.src="images\\" + topps[ob].src[0];
-  thisImg.onload=(()=>{
-    topps[ob].xC=thisImg.width / 2;
-    topps[ob].yC=thisImg.height / 2;
-  });
-};
-
-function setTopp(kind) {
-  uncheckAll();
-  const cBArr = setToppings[kind].ingred;
-  console.log(cBArr);
-  let wait = 0; // A tiny pause between topping drops to allow them to be added in layers
-  // Ticks a checkbox and drops topping for every string sent in the array argument
-  cBArr.forEach((elem)=>{
-    const i=document.getElementsByName(elem)
-    i[0].checked=true;
-    elem.interv = setTimeout(()=>{
-      dropToppings(elem,true);
-    },100*wait);
-    wait +=1;
-  });
-}
-function uncheckAll() {
-  const toppCBs = Array.from(document.getElementsByClassName("toppCB"));
-  toppCBs.forEach((elem)=>{
-    elem.checked = false;
-    vanishToppings(elem.name,false);
-  });
-}
-
-// checkbox action makes a topping appear or vanish
-function cBoxChange(cBox) {
-  if (cBox.checked) dropToppings(cBox.name,false);
-  else vanishToppings(cBox.name,false);
-}
-
-function vanishToppings(ingred,instant) { // Instant - delete toppings without vanish anim first
-  const frame = document.getElementById("pizza-frame");
-  const topp = topps[ingred];
-  clearInterval(topp.interv);
-  
-  if (instant) {
-    clearInterval(topp.interv);
-    topp.obj.forEach((elem)=> {
-      frame.removeChild(elem);
-    });
-    topp.obj = [];
-  } else {
-    topp.obj.forEach((elem)=> {
-      elem.style.animation="vanish 300ms 1";
-    })
-    topp.interv=setTimeout(()=>{
-      vanishToppings(ingred,true);
-    },300);
-  }
-}
-
-// Controls the number and type of toppings dropped
-function dropToppings(ingred,fast) {
-  vanishToppings(ingred,true); // If original toppings are still vanishing slowly, insta-delete them
-  const topp = topps[ingred];
-  let toppNum = 0; // Counts toppings placed
-  let subTopp = 0; // For cycling sub-toppings (green olive, black olive etc.)
-  const toppMax = topp.dist.reduce((acc,curr)=>acc+curr); // Max number of toppings to place
-
-  topp.interv = setInterval(()=>{
-    addTopping(topp.src[subTopp],topp.xC,topp.yC,toppNum,topp.dist,topp.dRot,topp.obj)
-    toppNum +=1;
-    if (toppNum >=toppMax) clearInterval(topp.interv);
-    subTopp +=1;
-    if (subTopp >= topp.src.length) subTopp = 0;
-  },fast? 0 : 300/toppMax); // If fast, drop all ingreds at same time, else drop all ingreds within 300ms
-}
-
-// Creates and positions each individual piece of topping 
-function addTopping(tPSrc,tpXC,tpYC,tPNum,disArr,dRot,objArr) {
-  const frame = document.getElementById("pizza-frame");
-  const xPizC = 224; const yPizC = 215; // X and Y Center of pizza
-  const posStagger = 5; // Max random position deviation
-  const rotStagger = 180; // Max random rotation deviation
-  const scaStagger = 0.2; // Max random scale deviation
-
-  const topping = document.createElement("img");
-  frame.appendChild(topping);
-  topping.className = "piz topp";
-  topping.src='images\\'+tPSrc;
-  topping.style.transform = 'rotate('+randPN(rotStagger)
-    + 'deg) scale(' + (1+Math.random()*scaStagger) + ')';
-  topping.style.transform
-
-  // Calc spacing between topping rings based on total no. rings
-  const ringSpace = 180 / disArr.length; 
-  // Choose ring to use based on number of toppings placed so far
-  let ring = 0;
-  if (tPNum < disArr[0]) {
-    ring = 0;
-  }
-  else if (tPNum < (disArr[0] + disArr[1])) {
-    ring = 1;
-    tPNum -= disArr[0];
-  } else if (tPNum < (disArr[0] + disArr[1] + disArr[2])) {
-    ring = 2;
-    tPNum -= (disArr[0] + disArr[1]);
-  } else {
-    ring = 3;
-    tPNum -= (disArr[0] + disArr[1] + disArr[2]);
-  }
-  let radius = ringSpace*(ring);
-  // Determine angle in ring to place topping in
-  let angle = (tPNum/disArr[ring]+dRot) * Math.PI*2;
-
-  let x = (Math.cos(angle)*radius) + xPizC - tpXC + randPN(posStagger);
-  let y = (Math.sin(angle)*radius) + yPizC - tpYC + randPN(posStagger);
-  topping.style.left=x.toString()+"px";
-  topping.style.top=y.toString()+"px";
-
-  objArr.push(topping);
-}
-
-function randPN(i) { // return a random number between -i and i
-  return Math.random() * i * (Math.floor(Math.random()*2) == 1 ? 1 : -1);
-}
-
+  let topps ={ {{topps : topps}} };
+console.log(topps);
 </script>
 
 </body>
-
-</html>

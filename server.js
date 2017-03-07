@@ -2,12 +2,19 @@
 const express = require('express');
 const bodyParser= require('body-parser')
 const app = express();
-const MongoClient = require('mongodb').MongoClient
+const MongoClient = require('mongodb').MongoClient // This system uses MongoLab - https://mlab.com
 const pubPath = __dirname + '\\public';
-// This system uses MongoLab - https://mlab.com
+const pizzaMod = require(pubPath+'/pizzaMod.js'); // Module containing pizza-related vars
+
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('public'));
-app.set('view engine', 'ejs'); // EJS is a simple template engine for rendering the quotes to screen
+
+// Handlebars
+var hbs = require('express-handlebars');
+app.engine('hbs', hbs({extname: 'hbs', defaultLayout: 'layoutLite', layoutsDir: __dirname  + '/views/layouts/'}));
+app.set('view engine', 'hbs');
+
+app.set('views', __dirname + '/views');
 
 let db;
 
@@ -19,21 +26,31 @@ MongoClient.connect(process.env.DATABASE_URL, (err,database) => {
   });
 });
 
+app.get('/test', (req,res) =>{ // Handlebars test. ENTER NOTHING NEW HERE.
+  res.render('test', {
+    title: 'Hey',
+    message: 'A message!',
+    condition: true,
+    anyArray: [1,2,3,4,5]
+  });
+}); // Handlebars test. ENTER NOTHING NEW HERE.
+
 app.get('/', (req,res) => {
-  res.sendFile(pubPath+'/index.html');
-})
+  res.render('index', {
+    topps:pizzaMod.topps,
+    setToppings: pizzaMod.setToppings,
+  });
+});
 
 app.get('/vote', (req, res) => {
-  let toppFile = require(pubPath+'/toppings.js');
-
   db.collection('pizzas').find().toArray(function(err,pResult) {
     if (err) return console.log('Pizza collection get error',err);
     db.collection('newtoppings').find().toArray(function(err,nTResult) {
       if (err) return console.log('newtoppings collection get error', err);
       //renders index.ejs
       res.render('vote.ejs', {
-        topps:toppFile.topps,
-        setToppings: toppFile.setToppings,
+        topps:pizzaMod.topps,
+        setToppings: pizzaMod.setToppings,
         pizzas:pResult,
         newToppings:nTResult
       });

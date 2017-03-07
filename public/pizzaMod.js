@@ -28,8 +28,6 @@ supreme:     {name: "Supreme", ingred: ["bacon", "ham","mushrooms","olives","pep
 vegsupreme:  {name: "Veg Supreme", ingred: ["mushrooms","olives","peppers","redonion","tomato","parsley","basil"]}
 };
 
-// Required for EJS to use these variables via nodeJS
-
 module.exports = {
   topps: topps,
   setToppings: setToppings

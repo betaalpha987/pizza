@@ -1,0 +1,20 @@
+<h1>{{ title }}</h1>
+<p>Welcome to {{ title }}
+
+<h3>Here's a message</h3>
+{{# if condition }}
+  Condition is true!
+{{else}}
+ Condition not true
+{{/if}}
+<br>
+{{# each anyArray}}
+  {{ this }}<br>
+{{/each}}
+
+<script>
+  let impArr = [{{ anyArray }}];
+  impArr.forEach((elem)=> {
+    console.log(elem);
+  });
+</script>
