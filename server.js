@@ -9,10 +9,7 @@ const pizzaMod = require(pubPath+'/pizzaMod.js'); // Module containing pizza-rel
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('public'));
 
-// Handlebars
-var hbs = require('express-handlebars');
-app.engine('hbs', hbs({extname: 'hbs', defaultLayout: 'layoutLite', layoutsDir: __dirname  + '/views/layouts/'}));
-app.set('view engine', 'hbs');
+app.set('view engine', 'ejs');
 
 app.set('views', __dirname + '/views');
 
@@ -26,15 +23,6 @@ MongoClient.connect(process.env.DATABASE_URL, (err,database) => {
   });
 });
 
-app.get('/test', (req,res) =>{ // Handlebars test. ENTER NOTHING NEW HERE.
-  res.render('test', {
-    title: 'Hey',
-    message: 'A message!',
-    condition: true,
-    anyArray: [1,2,3,4,5]
-  });
-}); // Handlebars test. ENTER NOTHING NEW HERE.
-
 app.get('/', (req,res) => {
   res.render('index', {
     topps:pizzaMod.topps,
@@ -47,7 +35,6 @@ app.get('/vote', (req, res) => {
     if (err) return console.log('Pizza collection get error',err);
     db.collection('newtoppings').find().toArray(function(err,nTResult) {
       if (err) return console.log('newtoppings collection get error', err);
-      //renders index.ejs
       res.render('vote.ejs', {
         topps:pizzaMod.topps,
         setToppings: pizzaMod.setToppings,
