@@ -14,7 +14,7 @@ const topps = {
   olives: {dist:[1,3,6,7], dRot:0.25,  src: ["piz_ing_greenolive.svg", "piz_ing_blackolive.svg"], obj:[], interv:0 },
   basil: {dist:[0,2,5], dRot:0.35,  src: ["piz_ing_basil.svg"], obj:[], interv:0 },
   parsley: {dist:[0,2,5], dRot:0.75,  src: ["piz_ing_parsley.svg"], obj:[], interv:0 },
-  groundchili: {dist:[1,4,12,20], dRot:0, src: ["piz_ing_redgroundc.svg", "piz_ing_yellowgroundc.svg", "piz_ing_orangegroundc.svg"], obj:[], inter:0},
+  groundchili: {dist:[1,4,12,20], dRot:0, src: ["piz_ing_redgroundc.svg", "piz_ing_yellowgroundc.svg", "piz_ing_orangegroundc.svg"], grpsrc: "piz_ing_grp_groundc.svg", obj:[], inter:0},
 };
 
 // Toppings are dropped in order onto pizza, so seasonings should go last.
