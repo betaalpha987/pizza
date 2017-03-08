@@ -1,130 +1,127 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <meta name="description" content="A pizza creator!">
-  <meta name="author" content="Kevin Nolan">
+<meta name="description" content="A pizza creator!">
+<meta name="author" content="Kevin Nolan">
 
-  <link href="https://fonts.googleapis.com/css?family=Catamaran" rel="stylesheet">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Catamaran" rel="stylesheet">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-  <link rel = "stylesheet" href="/stylesheets/style.css">
+<link rel = "stylesheet" href="/stylesheets/style.css">
 
-  <title>Pizza Drop</title>
+<title>Pizza Drop</title>
 
-  <style>
-    /* This is page-specific CSS not otherwise handled in style.css*/
+<style>
+  /* This is page-specific CSS not otherwise handled in style.css*/
 
-    #pizza-frame {
-      width: 448px;
-      height: 650px;
-      top: 5vh;
-      margin: auto;
-      position:relative;
-      padding:0px;
-    }
+  #pizza-frame {
+    width: 448px;
+    height: 650px;
+    top: 5vh;
+    margin: auto;
+    position:relative;
+    padding:0px;
+  }
 
-    .menu-frames {
-      z-index:1000;
-      position: absolute;
-      width: 30%;
-      max-width: 200px;
-      height:100%;
-      background-color:rgba(255,220,220,0.5);
-      text-align:center;
-      border: 2px solid white;
-      padding:3px;
-    }
-    #menu-frame-L {
-      top: 0%;
-      left: 0%;
-    }
-    #menu-frame-R {
-      top: 0%;
-      right: 0%;
-    }
+  .menu-frames {
+    z-index:1000;
+    position: absolute;
+    width: 30%;
+    max-width: 200px;
+    height:100%;
+    background-color:rgba(255,220,220,0.5);
+    text-align:center;
+    border: 2px solid white;
+    padding:3px;
+  }
+  #menu-frame-L {
+    top: 0%;
+    left: 0%;
+  }
+  #menu-frame-R {
+    top: 0%;
+    right: 0%;
+  }
 
-    #disp-time {
-      background-color:antiquewhite;
-      width:40px; height:20px;
-      border-radius:20%;
-      font-size:3rem;
-      padding:0px 5px 0px 5px;
-    }
-    #help-frame {
-      z-index:1000;
-      position: absolute;
-      top: 40%;
-      left: 20%;
-      width: 60%;
-      background-color:rgba(255,170,100,0.5);
-      text-align:center;
-      border: 2px solid white;
-      border-radius:20%;
-      padding:10px;
+  #disp-time {
+    background-color:antiquewhite;
+    width:40px; height:20px;
+    border-radius:20%;
+    font-size:3rem;
+    padding:0px 5px 0px 5px;
+  }
+  #help-frame {
+    z-index:1000;
+    position: absolute;
+    top: 40%;
+    left: 20%;
+    width: 60%;
+    background-color:rgba(255,170,100,0.5);
+    text-align:center;
+    border: 2px solid white;
+    border-radius:20%;
+    padding:10px;
 
-    }
-    #info-btn-frame {
-      position:absolute;
-      top: 5%;
-      right: 5%;
-    }
-    .btn-link {
-      color: #f55;
-      font-size:2rem;
-    }
-    .btn-warning {
-      background-color:#f55;
-      border-color:white;
-    }
-    .pomo-row {
-      margin:5px;
-    }
+  }
+  #info-btn-frame {
+    position:absolute;
+    top: 5%;
+    right: 5%;
+  }
+  .btn-link {
+    color: #f55;
+    font-size:2rem;
+  }
+  .btn-warning {
+    background-color:#f55;
+    border-color:white;
+  }
 
-    .piz { /*All pizza elements*/
-      position:absolute;
-      margin:0px;
-      padding:0px;
+  .piz { /*All pizza elements*/
+    position:absolute;
+    margin:0px;
+    padding:0px;
+  }
+  .bkg { /* Dough and platter*/
+    z-index:-5;
+  }
+  .t-base { /*tomato base*/
+    bottom:239px; left:28px;
+    z-index: 0;
+  }
+  .rim {
+    bottom:213px; left:3px;
+    z-index:1;
+  }
+  .c-base { /*cheese base*/
+    bottom:257px; left:45px;
+    z-index: 2;
+  }
+  .topp { /*Toppings*/
+    animation: topp-anim 300ms ease-in;
+    z-index: 4;
+  }
+  @keyframes topp-anim {
+    from {
+      transform:scale(2);
+      opacity:0;
     }
-    .bkg { /* Dough and platter*/
-      z-index:-5;
-    }
-    .t-base { /*tomato base*/
-      bottom:239px; left:28px;
-      z-index: 0;
-    }
-    .rim {
-      bottom:213px; left:3px;
-      z-index:1;
-    }
-    .c-base { /*cheese base*/
-      bottom:257px; left:45px;
-      z-index: 2;
-    }
-    .topp { /*Toppings*/
-      animation: topp-anim 300ms ease-in;
-      z-index: 4;
-    }
-    @keyframes topp-anim {
-      from {
-        transform:scale(2);
-        opacity:0;
-      }
-    }
+  }
 
-    @keyframes vanish {
-      to {
-        transform:scale(0.1);
-        opacity: 0;
-      }
-    
+  @keyframes vanish {
+    to {
+      transform:scale(0.1);
+      opacity: 0;
     }
+  
+  }
 
-  </style>
+</style>
 
 </head>
 
