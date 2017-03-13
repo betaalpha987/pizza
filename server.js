@@ -3,7 +3,7 @@ const express = require('express');
 const bodyParser= require('body-parser')
 const app = express();
 const MongoClient = require('mongodb').MongoClient // This system uses MongoLab - https://mlab.com
-const pubPath = __dirname + '\\public';
+const pubPath = __dirname + '/public';
 const pizzaMod = require(pubPath+'/pizzaMod.js'); // Module containing pizza-related vars
 
 app.use(bodyParser.urlencoded({extended: true}));
