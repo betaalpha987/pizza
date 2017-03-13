@@ -135,27 +135,33 @@
   <img src="images/piz_base_cheese.svg" class="piz c-base"/ id="cheese-base">
 </div>
 <div class="menu-frames" id="menu-frame-L">
-  <h3>Meat</h3>
-  <input class="toppCB" type = "checkbox" name = "ham" onchange="cBoxChange(this)"> Ham &nbsp;
-  <input class="toppCB" type = "checkbox" name = "bacon" onchange="cBoxChange(this)"> Bacon &nbsp;
-  <input class="toppCB" type = "checkbox" name = "pepperoni" onchange="cBoxChange(this)"> Pepperoni &nbsp;
-  <input class="toppCB" type = "checkbox" name = "salami" onchange="cBoxChange(this)"> Salami &nbsp;
-  <input class="toppCB" type = "checkbox" name = "shrimps" onchange="cBoxChange(this)"> Shrimps &nbsp;
+  <form action="/pizzas" method="POST">
+    <h3>Meat</h3>
+    <input class="toppCB" type = "checkbox" name = "ham" onchange="cBoxChange(this)"> Ham &nbsp;
+    <input class="toppCB" type = "checkbox" name = "bacon" onchange="cBoxChange(this)"> Bacon &nbsp;
+    <input class="toppCB" type = "checkbox" name = "pepperoni" onchange="cBoxChange(this)"> Pepperoni &nbsp;
+    <input class="toppCB" type = "checkbox" name = "salami" onchange="cBoxChange(this)"> Salami &nbsp;
+    <input class="toppCB" type = "checkbox" name = "shrimps" onchange="cBoxChange(this)"> Shrimps &nbsp;
 
-  <h3>Veg</h3>
-  <input class="toppCB" type = "checkbox" name = "mushrooms" onchange="cBoxChange(this)"> Mushrooms &nbsp;
-  <input class="toppCB" type = "checkbox" name = "tomato" onchange="cBoxChange(this)"> Tomato &nbsp;
-  <input class="toppCB" type = "checkbox" name = "pineapple" onchange="cBoxChange(this)"> Pineapple &nbsp;
-  <input class="toppCB" type = "checkbox" name = "redonion" onchange="cBoxChange(this)"> Red Onion &nbsp;
-  <input class="toppCB" type = "checkbox" name = "jalapenos" onchange="cBoxChange(this)"> Jalapeños &nbsp;
-  <input class="toppCB" type = "checkbox" name = "peppers" onchange="cBoxChange(this)"> Peppers &nbsp;
-  <input class="toppCB" type = "checkbox" name = "olives" onchange="cBoxChange(this)"> Olives &nbsp;
+    <h3>Veg</h3>
+    <input class="toppCB" type = "checkbox" name = "mushrooms" onchange="cBoxChange(this)"> Mushrooms &nbsp;
+    <input class="toppCB" type = "checkbox" name = "tomato" onchange="cBoxChange(this)"> Tomato &nbsp;
+    <input class="toppCB" type = "checkbox" name = "pineapple" onchange="cBoxChange(this)"> Pineapple &nbsp;
+    <input class="toppCB" type = "checkbox" name = "redonion" onchange="cBoxChange(this)"> Red Onion &nbsp;
+    <input class="toppCB" type = "checkbox" name = "jalapenos" onchange="cBoxChange(this)"> Jalapeños &nbsp;
+    <input class="toppCB" type = "checkbox" name = "peppers" onchange="cBoxChange(this)"> Peppers &nbsp;
+    <input class="toppCB" type = "checkbox" name = "olives" onchange="cBoxChange(this)"> Olives &nbsp;
 
-  <h3>Seasonings</h3>
-  <input class="toppCB" type = "checkbox" name = "basil" onchange="cBoxChange(this)"> Basil &nbsp;
-  <input class="toppCB" type = "checkbox" name = "parsley" onchange="cBoxChange(this)"> Parsley &nbsp;
-  <input class="toppCB" type = "checkbox" name = "groundchili" onchange="cBoxChange(this)"> Ground Chili &nbsp;
-  
+    <h3>Seasonings</h3>
+    <input class="toppCB" type = "checkbox" name = "basil" onchange="cBoxChange(this)"> Basil &nbsp;
+    <input class="toppCB" type = "checkbox" name = "parsley" onchange="cBoxChange(this)"> Parsley &nbsp;
+    <input class="toppCB" type = "checkbox" name = "groundchili" onchange="cBoxChange(this)"> Ground Chili &nbsp;
+    
+    <p>Create your favourite pizza then press the button to vote for it!</p>
+    <button>Submit</button>
+  </form>
+  <p>Skip voting and go straight to the results page</p>
+
 </div>
 <div class="menu-frames" id="menu-frame-R">
   <h3>Classic Favourites</h3>
@@ -168,8 +174,6 @@
   <button type="button" onclick='setTopp("sizzler")'>Sizzler</button> &nbsp;
   <button type="button" onclick='setTopp("supreme")'>Supreme</button> &nbsp;
   <button type="button" onclick='setTopp("vegsupreme")'>Veg Supreme</button> &nbsp;
-  <p>Create your favourite pizza then press the button</p>
-  <button>Submit</button>
 </div>
 
 <script>
